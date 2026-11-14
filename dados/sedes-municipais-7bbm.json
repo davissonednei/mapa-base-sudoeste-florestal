@@ -1,0 +1,350 @@
+{
+  "descricao": "Pontos representativos das sedes urbanas dos 57 municípios da área do 7º BBM, usados como destino de roteamento. Não representam centros dos polígonos territoriais.",
+  "fonte": "Municípios Brasileiros / kelvins/Municipios-Brasileiros — CSV de coordenadas e códigos IBGE",
+  "url_fonte": "https://github.com/kelvins/Municipios-Brasileiros/blob/main/csv/municipios.csv",
+  "total_municipios": 57,
+  "municipios": [
+    {
+      "nome": "Anagé",
+      "codigo_ibge": "2901205",
+      "lat": -14.6151,
+      "lng": -41.1356
+    },
+    {
+      "nome": "Barra do Choça",
+      "codigo_ibge": "2902906",
+      "lat": -14.8654,
+      "lng": -40.5791
+    },
+    {
+      "nome": "Belo Campo",
+      "codigo_ibge": "2903508",
+      "lat": -15.0334,
+      "lng": -41.2652
+    },
+    {
+      "nome": "Caetanos",
+      "codigo_ibge": "2905156",
+      "lat": -14.3347,
+      "lng": -40.9175
+    },
+    {
+      "nome": "Cândido Sales",
+      "codigo_ibge": "2906709",
+      "lat": -15.4993,
+      "lng": -41.2414
+    },
+    {
+      "nome": "Caraíbas",
+      "codigo_ibge": "2906899",
+      "lat": -14.7177,
+      "lng": -41.2603
+    },
+    {
+      "nome": "Encruzilhada",
+      "codigo_ibge": "2910404",
+      "lat": -15.5302,
+      "lng": -40.9124
+    },
+    {
+      "nome": "Piripá",
+      "codigo_ibge": "2924702",
+      "lat": -14.9444,
+      "lng": -41.7168
+    },
+    {
+      "nome": "Planalto",
+      "codigo_ibge": "2925006",
+      "lat": -14.6654,
+      "lng": -40.4718
+    },
+    {
+      "nome": "Poções",
+      "codigo_ibge": "2925105",
+      "lat": -14.5234,
+      "lng": -40.3634
+    },
+    {
+      "nome": "Tremedal",
+      "codigo_ibge": "2931806",
+      "lat": -14.9736,
+      "lng": -41.4142
+    },
+    {
+      "nome": "Vitória da Conquista",
+      "codigo_ibge": "2933307",
+      "lat": -14.8615,
+      "lng": -40.8442
+    },
+    {
+      "nome": "Abaíra",
+      "codigo_ibge": "2900108",
+      "lat": -13.2488,
+      "lng": -41.6619
+    },
+    {
+      "nome": "Aracatu",
+      "codigo_ibge": "2902005",
+      "lat": -14.428,
+      "lng": -41.4648
+    },
+    {
+      "nome": "Barra da Estiva",
+      "codigo_ibge": "2902807",
+      "lat": -13.6237,
+      "lng": -41.3347
+    },
+    {
+      "nome": "Brumado",
+      "codigo_ibge": "2904605",
+      "lat": -14.2021,
+      "lng": -41.6696
+    },
+    {
+      "nome": "Caculé",
+      "codigo_ibge": "2905008",
+      "lat": -14.5003,
+      "lng": -42.2229
+    },
+    {
+      "nome": "Caturama",
+      "codigo_ibge": "2907558",
+      "lat": -13.3239,
+      "lng": -42.2904
+    },
+    {
+      "nome": "Condeúba",
+      "codigo_ibge": "2908705",
+      "lat": -14.9022,
+      "lng": -41.9718
+    },
+    {
+      "nome": "Contendas do Sincorá",
+      "codigo_ibge": "2908804",
+      "lat": -13.7537,
+      "lng": -41.048
+    },
+    {
+      "nome": "Cordeiros",
+      "codigo_ibge": "2909000",
+      "lat": -15.0356,
+      "lng": -41.9308
+    },
+    {
+      "nome": "Dom Basílio",
+      "codigo_ibge": "2910107",
+      "lat": -13.7565,
+      "lng": -41.7677
+    },
+    {
+      "nome": "Érico Cardoso",
+      "codigo_ibge": "2900504",
+      "lat": -13.4215,
+      "lng": -42.1352
+    },
+    {
+      "nome": "Ibicoara",
+      "codigo_ibge": "2912202",
+      "lat": -13.4059,
+      "lng": -41.284
+    },
+    {
+      "nome": "Ituaçu",
+      "codigo_ibge": "2917201",
+      "lat": -13.8107,
+      "lng": -41.3003
+    },
+    {
+      "nome": "Guajeru",
+      "codigo_ibge": "2911659",
+      "lat": -14.5467,
+      "lng": -41.9381
+    },
+    {
+      "nome": "Jussiape",
+      "codigo_ibge": "2918605",
+      "lat": -13.5155,
+      "lng": -41.5882
+    },
+    {
+      "nome": "Lagoa Real",
+      "codigo_ibge": "2918753",
+      "lat": -14.0334,
+      "lng": -42.1328
+    },
+    {
+      "nome": "Livramento de Nossa Senhora",
+      "codigo_ibge": "2919504",
+      "lat": -13.6369,
+      "lng": -41.8432
+    },
+    {
+      "nome": "Maetinga",
+      "codigo_ibge": "2919959",
+      "lat": -14.6623,
+      "lng": -41.4915
+    },
+    {
+      "nome": "Malhada de Pedras",
+      "codigo_ibge": "2920304",
+      "lat": -14.3847,
+      "lng": -41.8842
+    },
+    {
+      "nome": "Mirante",
+      "codigo_ibge": "2921450",
+      "lat": -14.2385,
+      "lng": -40.7718
+    },
+    {
+      "nome": "Presidente Jânio Quadros",
+      "codigo_ibge": "2925709",
+      "lat": -14.6885,
+      "lng": -41.6798
+    },
+    {
+      "nome": "Rio de Contas",
+      "codigo_ibge": "2926707",
+      "lat": -13.5852,
+      "lng": -41.8048
+    },
+    {
+      "nome": "Rio do Antônio",
+      "codigo_ibge": "2926806",
+      "lat": -14.4071,
+      "lng": -42.0721
+    },
+    {
+      "nome": "Tanhaçu",
+      "codigo_ibge": "2931004",
+      "lat": -14.0197,
+      "lng": -41.2473
+    },
+    {
+      "nome": "Botuporã",
+      "codigo_ibge": "2904209",
+      "lat": -13.3772,
+      "lng": -42.5163
+    },
+    {
+      "nome": "Caetité",
+      "codigo_ibge": "2905206",
+      "lat": -14.0684,
+      "lng": -42.4861
+    },
+    {
+      "nome": "Candiba",
+      "codigo_ibge": "2906600",
+      "lat": -14.4097,
+      "lng": -42.8667
+    },
+    {
+      "nome": "Carinhanha",
+      "codigo_ibge": "2907103",
+      "lat": -14.2985,
+      "lng": -43.7724
+    },
+    {
+      "nome": "Feira da Mata",
+      "codigo_ibge": "2910776",
+      "lat": -14.2044,
+      "lng": -44.2744
+    },
+    {
+      "nome": "Guanambi",
+      "codigo_ibge": "2911709",
+      "lat": -14.2231,
+      "lng": -42.7799
+    },
+    {
+      "nome": "Ibiassucê",
+      "codigo_ibge": "2912004",
+      "lat": -14.2711,
+      "lng": -42.257
+    },
+    {
+      "nome": "Igaporã",
+      "codigo_ibge": "2913408",
+      "lat": -13.774,
+      "lng": -42.7155
+    },
+    {
+      "nome": "Iuiu",
+      "codigo_ibge": "2917334",
+      "lat": -14.4054,
+      "lng": -43.5595
+    },
+    {
+      "nome": "Jacaraci",
+      "codigo_ibge": "2917409",
+      "lat": -14.8541,
+      "lng": -42.4329
+    },
+    {
+      "nome": "Licínio de Almeida",
+      "codigo_ibge": "2919405",
+      "lat": -14.6842,
+      "lng": -42.5095
+    },
+    {
+      "nome": "Macaúbas",
+      "codigo_ibge": "2919801",
+      "lat": -13.0186,
+      "lng": -42.6945
+    },
+    {
+      "nome": "Malhada",
+      "codigo_ibge": "2920205",
+      "lat": -14.3371,
+      "lng": -43.7686
+    },
+    {
+      "nome": "Matina",
+      "codigo_ibge": "2921054",
+      "lat": -13.9109,
+      "lng": -42.8439
+    },
+    {
+      "nome": "Mortugaba",
+      "codigo_ibge": "2921807",
+      "lat": -15.0225,
+      "lng": -42.3727
+    },
+    {
+      "nome": "Palmas de Monte Alto",
+      "codigo_ibge": "2923407",
+      "lat": -14.2676,
+      "lng": -43.1609
+    },
+    {
+      "nome": "Paramirim",
+      "codigo_ibge": "2923605",
+      "lat": -13.4388,
+      "lng": -42.2395
+    },
+    {
+      "nome": "Pindaí",
+      "codigo_ibge": "2924504",
+      "lat": -14.4921,
+      "lng": -42.686
+    },
+    {
+      "nome": "Sebastião Laranjeiras",
+      "codigo_ibge": "2930006",
+      "lat": -14.571,
+      "lng": -42.9434
+    },
+    {
+      "nome": "Tanque Novo",
+      "codigo_ibge": "2931053",
+      "lat": -13.5485,
+      "lng": -42.4934
+    },
+    {
+      "nome": "Urandi",
+      "codigo_ibge": "2932606",
+      "lat": -14.7678,
+      "lng": -42.6498
+    }
+  ]
+}
