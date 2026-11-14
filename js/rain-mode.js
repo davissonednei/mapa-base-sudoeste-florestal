@@ -224,6 +224,10 @@
   $("rainSearch").oninput=ranking;
   $("rainToggleVolume").onclick=function(){s.rainOn=!s.rainOn;this.classList.toggle("off",!s.rainOn);if(s.rainOn)rainLayer.addTo(map);else map.removeLayer(rainLayer)};
   $("rainToggleAlert").onclick=function(){s.alertOn=!s.alertOn;this.classList.toggle("off",!s.alertOn);if(s.alertOn)warningLayer.addTo(map);else map.removeLayer(warningLayer)};
+  // Exibe o mapa de chuva assim que a malha de 57 municípios terminar de carregar.
+  setInterval(()=>{
+    if(active()&&s.rows.size&&typeof mapReady!=="undefined"&&mapReady&&!rainLayer.getLayers().length)render();
+  },750);
   setInterval(()=>{
     if(!active())return;
     if(s.rows.size&&typeof mapReady!=="undefined"&&mapReady&&!rainLayer.getLayers().length)render();
