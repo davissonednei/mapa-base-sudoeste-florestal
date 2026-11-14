@@ -1,0 +1,82 @@
+name: Validar interface dos modos operacionais
+on:
+  push:
+    paths:
+      - 'js/rain-mode.js'
+      - 'index.html'
+      - 'scripts/update_rain_sudoeste.py'
+      - 'dados/chuva/municipios.json'
+      - '.github/workflows/validar-interface.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: verificar-interface-sudoeste
+  cancel-in-progress: true
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Conferir scripts, municípios e componentes
+        id: sintaxe
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check js/rain-mode.js
+          python -m py_compile scripts/update_rain_sudoeste.py
+          python - <<'PY'
+          import json
+          from html.parser import HTMLParser
+          from pathlib import Path
+          class Ids(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.ids=[]
+                  self.scripts=[]
+              def handle_starttag(self,tag,attrs):
+                  d=dict(attrs)
+                  if d.get("id"):self.ids.append(d["id"])
+                  if tag=="script" and d.get("src"):self.scripts.append(d["src"])
+          page=Path("index.html").read_text(encoding="utf-8")
+          parsed=Ids();parsed.feed(page)
+          required={"modeFire","modeRain","florestalAside","rainAside","rainMax","rainTwenty","rainAlertCount","rainCover","rainStatus","rainUpdate","rainCities","rainWarnings","rainDetail","rainMapLegend","rainSearch","rainToggleVolume","rainToggleAlert"}
+          assert required.issubset(set(parsed.ids)),sorted(required-set(parsed.ids))
+          assert len(parsed.ids)==len(set(parsed.ids)), "ID HTML duplicado"
+          assert "js/rain-mode.js" in parsed.scripts
+          municipios=json.loads(Path("dados/chuva/municipios.json").read_text(encoding="utf-8"))["municipios"]
+          assert len(municipios)==len({m["codigo_ibge"] for m in municipios})==57
+          print("Interface e dados: OK, 57 municípios.")
+          PY
+      - name: Publicar diagnóstico verificável
+        if: always()
+        shell: bash
+        env:
+          RESULTADO: \${{ steps.sintaxe.outcome }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from datetime import datetime,timezone
+          from pathlib import Path
+          ok=os.environ.get("RESULTADO")=="success"
+          out=Path("dados/chuva/diagnostico-interface.json")
+          out.parent.mkdir(parents=True,exist_ok=True)
+          out.write_text(json.dumps({"verificacao":"sintaxe dos scripts e contrato HTML/dados","resultado":"ok" if ok else "falha","atualizado_em":datetime.now(timezone.utc).isoformat()},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dados/chuva/diagnostico-interface.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Validação da interface operacional [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
