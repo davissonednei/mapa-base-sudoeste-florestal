@@ -1,6 +1,6 @@
 {
   "verificacao": "sintaxe dos scripts e contrato HTML/dados",
   "resultado": "ok",
-  "atualizado_em": "2026-11-14T14:18:17.336425+00:00",
+  "atualizado_em": "2026-11-14T14:29:48.695432+00:00",
   "detalhes": "Vigência INMET: OK (ativo, futuro e vencido).\nInterface e dados: OK, 57 municípios.\n"
 }
