@@ -4,6 +4,7 @@ on:
     paths:
       - 'js/rain-mode.js'
       - 'js/rain-map-ui.js'
+      - 'js/gcif-spiderfy-core.js'
       - 'index.html'
       - 'scripts/update_rain_sudoeste.py'
       - 'dados/chuva/municipios.json'
@@ -39,6 +40,7 @@ jobs:
           set -euo pipefail
           node --check js/rain-mode.js
           node --check js/rain-map-ui.js
+          node --check js/gcif-spiderfy-core.js
           python -m py_compile scripts/update_rain_sudoeste.py
           python - <<'PY'
           import importlib.util
@@ -74,6 +76,16 @@ jobs:
           assert "js/rain-mode.js" in parsed.scripts
           assert "js/rain-map-ui.js" in parsed.scripts
           assert {"toggleRainClouds","toggleRainINMET"}.issubset(set(parsed.ids))
+          core=Path("js/gcif-spiderfy-core.js").read_text(encoding="utf-8")
+          assert 'Municípios do 7º BBM' in core
+          assert 'configurarAccordion(tituloMunicipios,listaMunicipios)' in core
+          assert '#florestalAside #munList.accordion-panel{display:none!important}' in page
+          assert 'body[data-mode="chuva"] #florestalAside{display:block!important}' in page
+          assert 'body[data-mode="chuva"] #florestalAside .fire-legend' in page
+          assert 'body[data-mode="chuva"] #florestalAside .fire-layer' in page
+          assert 'body[data-mode="chuva"] #florestalAside .front-layer' in page
+          assert 'body[data-mode="chuva"] main>aside{display:block!important}' in page
+          print("Sidebar compartilhada, municípios recolhíveis e filtros exclusivos: OK.")
           municipios=json.loads(Path("dados/chuva/municipios.json").read_text(encoding="utf-8"))["municipios"]
           assert len(municipios)==len({m["codigo_ibge"] for m in municipios})==57
           print("Interface e dados: OK, 57 municípios.")
