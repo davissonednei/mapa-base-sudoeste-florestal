@@ -34,8 +34,8 @@
     };
   })();
 
-  /* Recorte territorial exato informado pelo operador: união dos municípios
-   * do 4º, 6º, 7º, 8º e 18º BBM, conforme a Portaria 181/2023. */
+  /* Área atual do painel: somente os 57 municípios do 7º BBM
+   * conforme a Portaria 181/2023. */
   try {
     isCoberturaOeste = rec => CAMPO_ATUACAO_SUDOESTE.has(norm(rec.nome));
     if (typeof COBERTURA_MANUAL !== "undefined" && COBERTURA_MANUAL?.clear) COBERTURA_MANUAL.clear();
