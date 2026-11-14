@@ -112,6 +112,8 @@ function createInmet(rec,alerts){
 }
 function updateMap(){
   if(!isRain()||typeof mapReady==="undefined"||!mapReady)return;
+  // O recorte da Base Sudoeste também é aplicado quando a malha termina de carregar.
+  setBaseBoundaries(true);
   clearLayers();
   for(const rec of territory()){
     // A borda do município continua visível quando Chuva e INMET estão desligados.
