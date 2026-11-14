@@ -1,6 +1,6 @@
 {
   "verificacao": "sintaxe dos scripts e contrato HTML/dados",
-  "resultado": "ok",
-  "atualizado_em": "2026-11-14T14:11:05.795162+00:00",
-  "detalhes": "Interface e dados: OK, 57 municípios.\n"
+  "resultado": "falha",
+  "atualizado_em": "2026-11-14T14:12:07.431335+00:00",
+  "detalhes": "Traceback (most recent call last):\n  File \"<stdin>\", line 4, in <module>\n  File \"<frozen importlib._bootstrap_external>\", line 999, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/home/runner/work/mapa-base-sudoeste-florestal/mapa-base-sudoeste-florestal/scripts/update_rain_sudoeste.py\", line 7, in <module>\n    import requests\nModuleNotFoundError: No module named 'requests'\n"
 }
