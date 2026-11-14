@@ -39,6 +39,19 @@ jobs:
           node --check js/rain-map-ui.js
           python -m py_compile scripts/update_rain_sudoeste.py
           python - <<'PY'
+          import importlib.util
+          from datetime import datetime,timezone
+          spec=importlib.util.spec_from_file_location("chuva","scripts/update_rain_sudoeste.py")
+          src=importlib.util.module_from_spec(spec);spec.loader.exec_module(src)
+          src.NOW=datetime(2026,11,14,15,0,tzinfo=timezone.utc)  # meio-dia Bahia
+          assert src.aviso_vigente("2026-11-14","2026-11-14","10:00","15:00")
+          assert not src.aviso_vigente("2026-11-14","2026-11-14","13:00","15:00")
+          assert not src.aviso_vigente("2026-11-13","2026-11-13","00:00","23:59")
+          assert not src.aviso_vigente("2026-11-15","2026-11-15","00:00","23:59")
+          print("Vigência INMET: OK (ativo, futuro e vencido).")
+          PY
+
+          python - <<'PY'
           import json
           from html.parser import HTMLParser
           from pathlib import Path
