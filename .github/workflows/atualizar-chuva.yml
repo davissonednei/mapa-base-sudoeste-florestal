@@ -6,7 +6,7 @@ on:
       - 'dados/chuva/municipios.json'
       - '.github/workflows/atualizar-chuva.yml'
   schedule:
-    - cron: '17 * * * *'
+    - cron: '7,22,37,52 * * * *'
   workflow_dispatch:
 permissions:
   contents: write

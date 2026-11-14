@@ -2,6 +2,7 @@
 """Atualiza chuva modelada Open-Meteo e alertas INMET. Não confundir chuva estimada com medida."""
 import json, math, re, sys, unicodedata
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 import requests
 
@@ -31,7 +32,7 @@ def forecast():
             "latitude": ",".join(str(m["lat"]) for m in group),
             "longitude": ",".join(str(m["lng"]) for m in group),
             "hourly": "precipitation,precipitation_probability",
-            "current": "temperature_2m,relative_humidity_2m,wind_speed_10m",
+            "current": "temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,rain,showers",
             "past_days": 2, "forecast_days": 4,
             "timeformat": "unixtime", "timezone": "America/Bahia"
         }
@@ -73,12 +74,20 @@ def forecast():
                 "temperatura_c":number(current.get("temperature_2m")),
                 "umidade_pct":number(current.get("relative_humidity_2m")),
                 "vento_kmh":number(current.get("wind_speed_10m")),
+                # Precipitação modelada no período imediatamente anterior ao horário 'current.time'.
+                # No Brasil, o valor pode ser interpolado da previsão horária; NÃO é medição de estação.
+                "chuva_agora_mm":number(current.get("precipitation")),
+                "chuva_agora_horario_utc":(
+                    datetime.fromtimestamp(int(current["time"]),timezone.utc).isoformat().replace("+00:00","Z")
+                    if isinstance(current.get("time"),(int,float)) else None
+                ),
+                "chuva_agora_intervalo_segundos":current.get("interval"),
                 "serie_horaria":future
             })
     write("previsao.json",{
         "atualizado_em":STAMP,"disponivel":bool(rows),"completo":len(rows)==len(LOCAIS),
         "municipios_esperados":len(LOCAIS),"municipios":rows,
-        "fonte":"Open-Meteo","metodologia":"Precipitação modelada por ponto aproximado do município; últimas 24h são estimativa do modelo, não dado observado.","erros":errors
+        "fonte":"Open-Meteo","metodologia":"Precipitação modelada por ponto aproximado do município; chuva agora refere-se ao intervalo recente do modelo (aprox. 15 min), não é medição de pluviômetro; últimas 24h também são estimativa.","erros":errors
     })
     print("Previsões",len(rows),"/",len(LOCAIS))
     return bool(rows)
@@ -101,6 +110,18 @@ def codes_names(value):
             if len(s)<110 and not re.search(r"\d{5,}",s):names.add(normalize(s))
     walk(value)
     return codes,names
+
+def aviso_vigente(inicio,fim,hora_inicio,hora_fim):
+    """Incluir no mapa somente avisos dentro da janela de validade, em hora local BA."""
+    if not inicio or not fim or not hora_inicio or not hora_fim:
+        return False
+    try:
+        # Datas/horas exibidas pelo INMET são locais. Falta de campo -> não presumir vigência.
+        ini=datetime.fromisoformat(str(inicio)[:10]+"T"+str(hora_inicio)[:5]+":00").replace(tzinfo=ZoneInfo("America/Bahia"))
+        end=datetime.fromisoformat(str(fim)[:10]+"T"+str(hora_fim)[:5]+":00").replace(tzinfo=ZoneInfo("America/Bahia"))
+        return ini<=NOW.astimezone(ZoneInfo("America/Bahia"))<=end
+    except (ValueError,TypeError,OverflowError):
+        return False
 
 def warnings():
     try:
@@ -134,6 +155,8 @@ def warnings():
             fim=str(alert.get("data_fim") or alert.get("fim") or "")[:10]
             horas_i=str(alert.get("hora_inicio") or "")
             horas_f=str(alert.get("hora_fim") or "")
+            if not aviso_vigente(inicio,fim,horas_i,horas_f):
+                continue
             def descricao_limpa(value):
                 return "\n".join(str(x).strip() for x in value if str(x).strip()) if isinstance(value,list) else str(value or "")
             result.append({
@@ -147,8 +170,8 @@ def warnings():
                 "instrucoes":descricao_limpa(alert.get("instrucoes")),"municipios":sorted(matched),
                 "url":"https://avisos.inmet.gov.br/"+ident if ident.isdigit() else "https://avisos.inmet.gov.br/"
             })
-        write("avisos.json",{"atualizado_em":STAMP,"disponivel":True,"avisos":result,"fonte":"INMET (avisos vigentes e futuros)"})
-        print("Avisos na área:",len(result))
+        write("avisos.json",{"atualizado_em":STAMP,"disponivel":True,"avisos":result,"fonte":"INMET (apenas avisos vigentes no instante da consulta)"})
+        print("Avisos VIGENTES na área:",len(result))
     except (requests.RequestException,ValueError,TypeError) as exc:
         write("avisos.json",{"atualizado_em":STAMP,"disponivel":False,"avisos":[],"fonte":"INMET","erro":str(exc)[:160]})
         print("INMET indisponível; NÃO equivale a ausência de avisos",file=sys.stderr)
