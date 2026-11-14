@@ -31,7 +31,7 @@ for(const group of Object.values(layers))allowed.add(group);
 // O renderer SVG também é um layer: impedir que o modo Florestal o remova.
 allowed.add(municipalRenderer);
 function allow(layer){allowed.add(layer);if(layer.eachLayer)layer.eachLayer(child=>allowed.add(child));return layer}
-const state={mode:"fogo",clouds:false,inmet:false,metric:periods[0][0],rows:new Map(),alerts:[],alertOK:false,forecastOK:false,forecastUpdated:null,alertUpdated:null,stale:false,loaded:false,selected:null,detailType:"chuva",loading:false,lastFetch:0};
+const state={mode:"fogo",clouds:false,inmet:false,metric:periods[0][0],rows:new Map(),alerts:[],alertOK:false,forecastOK:false,forecastUpdated:null,alertUpdated:null,stale:false,loaded:false,selected:null,detailType:"chuva",loading:false,lastFetch:0,activeRainCount:0};
 const btnCloud=el("toggleRainClouds"),btnINMET=el("toggleRainINMET"),details=el("rainDetail");
 const rainColors=["#c8ebf9","#84c5e5","#3c90c7","#225eac","#663fa8","#a631a2"];
 function color(x){let n=finite(x);return n===null?"#64748b":n<1?rainColors[0]:n<10?rainColors[1]:n<25?rainColors[2]:n<50?rainColors[3]:n<100?rainColors[4]:rainColors[5]}
@@ -40,8 +40,39 @@ function territory(){
   return typeof records==="undefined"?[]:records.filter(r=>isCoberturaOeste(r));
 }
 function fromCurrentMunicipality(name){return territory().find(r=>normalize(r.nome)===normalize(name))}
+// Validação independente no navegador: um aviso futuro ou vencido nunca gera overlay.
+function localBahiaNow(){
+  const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Bahia",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date());
+  const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));
+  return p.year+"-"+p.month+"-"+p.day+"T"+p.hour+":"+p.minute;
+}
+function activeWarning(a){
+  if(!a)return false;
+  let inicio=String(a.inicio||"").slice(0,10);
+  let fim=String(a.fim||"").slice(0,10);
+  let horaI=String(a.hora_inicio||"").slice(0,5);
+  let horaF=String(a.hora_fim||"").slice(0,5);
+  if(!horaI||!horaF){
+    const times=String(a.janela||"").match(/(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\s+até\s+(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})/i);
+    if(times){inicio=times[1];horaI=times[2];fim=times[3];horaF=times[4]}
+  }
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(inicio)||!/^\d{4}-\d{2}-\d{2}$/.test(fim)||!/^\d{2}:\d{2}$/.test(horaI)||!/^\d{2}:\d{2}$/.test(horaF))return false;
+  const now=localBahiaNow();
+  return inicio+"T"+horaI<=now&&now<=fim+"T"+horaF;
+}
 function alertsIn(name){
-  return state.alertOK?state.alerts.filter(a=>Array.isArray(a.municipios)&&a.municipios.some(m=>normalize(m)===normalize(name))):[];
+  return state.alertOK?state.alerts.filter(a=>activeWarning(a)&&Array.isArray(a.municipios)&&a.municipios.some(m=>normalize(m)===normalize(name))):[];
+}
+// Open-Meteo 'current.precipitation' reflete o período anterior (15 min modelados);
+// a ausência do dado ou desatualização não é interpretada como chuva zero.
+function currentRain(row){
+  const rain=finite(row?.chuva_agora_mm);
+  const at=Date.parse(String(row?.chuva_agora_horario_utc||""));
+  const fileAt=Date.parse(String(state.forecastUpdated||""));
+  const now=Date.now();
+  if(rain===null||rain<=0||!Number.isFinite(at)||!Number.isFinite(fileAt))return null;
+  if(now-at>75*60000||now-at< -20*60000||now-fileAt>75*60000||now-fileAt< -20*60000)return null;
+  return rain;
 }
 function cleanLink(u){return /^https:\/\/avisos\.inmet\.gov\.br\/[0-9]*$/.test(String(u||""))?u:"https://avisos.inmet.gov.br/"}
 function readData(url){return fetch(url+"?v="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()})}
@@ -66,7 +97,7 @@ async function loadData(force=false){
     state.alerts=a.value.avisos;
     state.alertOK=true;
     state.alertUpdated=a.value.atualizado_em||null;
-    if(!state.alertUpdated||Date.now()-Date.parse(state.alertUpdated)>5*3600000)state.alertOK=false;
+    if(!state.alertUpdated||Date.now()-Date.parse(state.alertUpdated)>75*60000)state.alertOK=false;
   }else{
     state.alertOK=false;
     state.alerts=[];
@@ -103,17 +134,23 @@ function updateToolbar(){
   const info=el("rainMapInfo");
   if(info){
     let text=state.forecastOK?state.rows.size+"/57 com previsão":"Previsão indisponível";
-    if(state.stale)text+=" • desatualizada";
-    text+=state.alertOK?" • "+state.alerts.length+" avisos INMET":" • INMET indisponível";
+    const hasCurrent=[...state.rows.values()].some(row=>row&&Number.isFinite(Date.parse(String(row.chuva_agora_horario_utc||""))));
+    if(state.clouds){
+      if(!state.forecastOK||!hasCurrent)text+=" • chuva atual sem dados";
+      else text+=" • "+state.activeRainCount+" município(s) com chuva indicada agora";
+    }
+    if(state.stale)text+=" • previsão desatualizada";
+    const activeCount=state.alertOK?state.alerts.filter(activeWarning).length:null;
+    text+=activeCount===null?" • INMET indisponível":" • "+activeCount+" aviso(s) INMET vigente(s)";
     info.textContent=text;
   }
 }
-function createCloud(rec){
-  const value=finite(state.rows.get(normalize(rec.nome))?.[state.metric]);
-  const label=htmlSafe(value===null?"—":fmt(value));
-  const icon=L.divIcon({className:"rain-cloud-icon",html:'<div class="rain-cloud-bubble'+(value===null?' nodata':'')+'"><span>☁️</span><b>'+label+'</b></div>',iconSize:[68,36],iconAnchor:[33,42]});
-  const marker=L.marker([rec.center.lat,rec.center.lng],{icon,keyboard:true,riseOnHover:true,zIndexOffset:230,title:"Chuva: "+rec.nome});
-  marker.bindTooltip(htmlSafe(rec.nome)+" · "+label,{direction:"top",offset:[0,-30]});
+function createCloud(rec,precipitation){
+  // A nuvem representa SOMENTE precipitação atual modelada e recente no ponto amostrado.
+  const label=htmlSafe(fmt(precipitation));
+  const icon=L.divIcon({className:"rain-cloud-icon",html:'<div class="rain-cloud-bubble"><span>🌧️</span><b>'+label+'</b></div>',iconSize:[68,36],iconAnchor:[33,42]});
+  const marker=L.marker([rec.center.lat,rec.center.lng],{icon,keyboard:true,riseOnHover:true,zIndexOffset:230,title:"Chuva atual (modelo): "+rec.nome});
+  marker.bindTooltip(htmlSafe(rec.nome)+" · chuva indicada agora: "+label+" no período recente do modelo",{direction:"top",offset:[0,-30]});
   marker.on("click",()=>showDetails(rec.nome,"chuva"));
   return allow(marker);
 }
@@ -131,27 +168,28 @@ function updateMap(){
   // O recorte da Base Sudoeste também é aplicado quando a malha termina de carregar.
   setBaseBoundaries(true);
   clearLayers();
+  state.activeRainCount=0;
   for(const rec of territory()){
     // A borda do município continua visível quando Chuva e INMET estão desligados.
     const boundary=L.geoJSON(rec.feature,{
       renderer:municipalRenderer,
       interactive:true,
       bubblingMouseEvents:false,
-      style:{color:"#b6e5fa",weight:2.25,opacity:1,fillColor:"#6da7d1",fillOpacity:0.09}
+      style:{color:"#3979a6",weight:2.25,opacity:1,fillColor:"#6d9abb",fillOpacity:0.09}
     });
     boundary.eachLayer(path=>{
       path.bindTooltip(htmlSafe(rec.nome),{sticky:true,direction:"top"});
       path.on("click",()=>showDetails(rec.nome,"chuva"));
-      path.on("mouseover",()=>path.setStyle({color:"#effaff",weight:3.1,fillOpacity:0.17}));
-      path.on("mouseout",()=>path.setStyle({color:"#b6e5fa",weight:2.25,fillOpacity:0.09}));
+      path.on("mouseover",()=>path.setStyle({color:"#1c597e",weight:3.1,fillOpacity:0.17}));
+      path.on("mouseout",()=>path.setStyle({color:"#3979a6",weight:2.25,fillOpacity:0.09}));
     });
     layers.boundaries.addLayer(allow(boundary));
     if(state.clouds){
-      const v=finite(state.rows.get(normalize(rec.nome))?.[state.metric]);
-      const polygon=L.geoJSON(rec.feature,{style:{color:"#5384a2",weight:0.65,fillColor:color(v),fillOpacity:v===null?.06:.60}});
-      polygon.eachLayer(p=>{p.bindTooltip(htmlSafe(rec.nome)+" • "+htmlSafe(fmt(v)),{sticky:true});p.on("click",()=>showDetails(rec.nome,"chuva"))});
-      layers.volumes.addLayer(allow(polygon));
-      layers.clouds.addLayer(createCloud(rec));
+      const nowValue=currentRain(state.rows.get(normalize(rec.nome)));
+      if(nowValue!==null){
+        layers.clouds.addLayer(createCloud(rec,nowValue));
+        state.activeRainCount++;
+      }
     }
     if(state.inmet&&state.alertOK){
       const alerts=alertsIn(rec.nome);
@@ -160,9 +198,6 @@ function updateMap(){
         layers.warnings.addLayer(createInmet(rec,alerts));
       }
     }
-  }
-  if(state.clouds){
-    allow(layers.volumes).addTo(map);
   }
   if(state.inmet){
     allow(layers.warningPolygons).addTo(map);
@@ -194,6 +229,10 @@ function showDetails(name,kind="chuva"){
     '<button type="button" class="rain-period'+(state.metric===key?' selected':'')+'" data-map-period="'+htmlSafe(key)+'">'+htmlSafe(label)+'</button>').join("")+'</div>';
   const label=periods.find(x=>x[0]===state.metric)?.[1]||"Próximas 24h";
   html+='<div class="rain-metric-hero"><b>'+htmlSafe(fmt(row?.[state.metric]))+'</b><span>'+htmlSafe(label)+' • '+(state.metric.startsWith("passadas")?"Estimativa do modelo":"Previsão Open-Meteo")+'</span></div>';
+  if(row){
+    const nowRain=currentRain(row),validTime=String(row.chuva_agora_horario_utc||"");
+    html+='<p class="rain-muted"><strong>Chuva agora (estimativa modelada):</strong> '+(nowRain!==null?htmlSafe(fmt(nowRain))+" no período recente":Number.isFinite(Date.parse(validTime))&&Date.now()-Date.parse(validTime)<75*60000?"Sem precipitação indicada no ponto amostrado":"Dado atual indisponível ou desatualizado")+'</p>';
+  }
   if(row){
     const cards=[["Próximas 24h",fmt(row.proximas_24h_mm)],["Próximas 48h",fmt(row.proximas_48h_mm)],["Próximas 72h",fmt(row.proximas_72h_mm)],["Últimas 24h • modelo",fmt(row.passadas_24h_estimativa_mm)],["Probabilidade máxima 24h",pct(row.probabilidade_max_24h_pct)],["Pico horário 72h",fmt(row.pico_horario_72h_mm)]];
     html+='<div class="rain-kpis">'+cards.map(x=>'<div class="rain-kpi"><strong>'+htmlSafe(x[1])+'</strong><small>'+htmlSafe(x[0])+'</small></div>').join("")+'</div>';
@@ -250,7 +289,8 @@ setInterval(()=>{
   observeMode();
   if(!isRain())return;
   if(typeof mapReady!=="undefined"&&mapReady&&!map.hasLayer(layers.boundaries))updateMap();
-  if(state.loaded&&Date.now()-state.lastFetch>40*60*1000)loadData(true);
+  if(state.loaded&&Date.now()-state.lastFetch>5*60*1000)loadData(true);
+  if(state.clouds||state.inmet)updateToolbar();
 },1300);
 map.on("zoomend",()=>map.getContainer().classList.toggle("rain-cloud-compact",map.getZoom()<9));
 observeMode();
