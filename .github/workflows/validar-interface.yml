@@ -32,6 +32,7 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
+          exec > >(tee /tmp/interface-check.log) 2>&1
           set -euo pipefail
           node --check js/rain-mode.js
           python -m py_compile scripts/update_rain_sudoeste.py
@@ -62,16 +63,18 @@ jobs:
         if: always()
         shell: bash
         env:
-          RESULTADO: \${{ steps.sintaxe.outcome }}
+          RESULTADO: ${{ steps.sintaxe.outcome }}
         run: |
           python - <<'PY'
           import json, os
           from datetime import datetime,timezone
           from pathlib import Path
           ok=os.environ.get("RESULTADO")=="success"
+          log=Path("/tmp/interface-check.log")
+          detalhes=log.read_text(encoding="utf-8")[-2800:] if log.exists() else "Execução não iniciada"
           out=Path("dados/chuva/diagnostico-interface.json")
           out.parent.mkdir(parents=True,exist_ok=True)
-          out.write_text(json.dumps({"verificacao":"sintaxe dos scripts e contrato HTML/dados","resultado":"ok" if ok else "falha","atualizado_em":datetime.now(timezone.utc).isoformat()},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          out.write_text(json.dumps({"verificacao":"sintaxe dos scripts e contrato HTML/dados","resultado":"ok" if ok else "falha","atualizado_em":datetime.now(timezone.utc).isoformat(),"detalhes":detalhes},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
