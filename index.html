@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#071019">
-<title>Base Florestal Sudoeste — Mapa Operacional</title>
+<title>Base Sudoeste — Mapa Operacional</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <style>
 :root{--bg:#071019;--panel:#0b1620;--panel2:#101d29;--panel3:#152432;--line:#213243;--line2:#31485b;--text:#f5f7fa;--muted:#9dafbe;--orange:#f59e0b;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;--amber:#f59e0b;--yellow:#eab308;--gray:#7c8794}
@@ -72,7 +72,7 @@ body[data-mode="fogo"] #rainAside,body[data-mode="fogo"] #rainMapLegend,body[dat
 </head>
 <body data-mode="fogo">
 <header>
-  <div class="brand"><div class="logo">🔥</div><div><div class="title">Base Florestal Sudoeste — Mapa Operacional</div><div class="sub">Operação Florestal Bahia • 7º BBM / Vitória da Conquista • integração CENSIPAM</div></div></div>
+  <div class="brand"><div class="logo">🔥</div><div><div class="title">Base Sudoeste — Mapa Operacional</div><div class="sub">Operação Florestal Bahia • 7º BBM / Vitória da Conquista • integração CENSIPAM</div></div></div>
   <div class="mode-switch" role="group" aria-label="Modo de operação"><button id="modeFire" class="mode-choice active" type="button" aria-pressed="true">🔥 Florestal</button><button id="modeRain" class="mode-choice rain" type="button" aria-pressed="false">🌧️ Chuva</button></div>
   <div class="header-status"><span class="live-dot"></span>MAPA OPERACIONAL • 7º BBM</div>
 </header>
@@ -107,7 +107,7 @@ body[data-mode="fogo"] #rainAside,body[data-mode="fogo"] #rainMapLegend,body[dat
   <div class="rain-summary">
     <div class="rain-stat"><strong id="rainMax">—</strong><span id="rainMaxLabel">MAIOR ACUMULADO PREVISTO</span></div>
     <div class="rain-stat"><strong id="rainTwenty">—</strong><span>MUNICÍPIOS COM 20+ MM</span></div>
-    <div class="rain-stat"><strong id="rainAlertCount">—</strong><span>AVISOS INMET NA ÁREA</span></div>
+    <div class="rain-stat"><strong id="rainAlertCount">—</strong><span>AVISOS INMET • VIGENTES/FUTUROS</span></div>
     <div class="rain-stat"><strong id="rainCover">—</strong><span>MUNICÍPIOS COM DADOS</span></div>
   </div>
   <div class="rain-status"><b id="rainStatus">Consultando chuva…</b><small id="rainUpdate">Open-Meteo</small></div>

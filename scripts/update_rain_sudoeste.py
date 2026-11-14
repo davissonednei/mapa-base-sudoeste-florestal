@@ -110,6 +110,14 @@ def warnings():
         if isinstance(payload,dict): alerts=list(payload.get("hoje") or [])+list(payload.get("futuro") or [])
         elif isinstance(payload,list):alerts=payload
         else:raise ValueError("Formato não reconhecido")
+        # A API pode repetir o mesmo aviso em "hoje" e "futuro".
+        by_id={}
+        for a in alerts:
+            if not isinstance(a,dict): continue
+            ident=str(a.get("id_aviso") or a.get("id") or a.get("codigo") or "")
+            if ident not in by_id or (a.get("id_sequencia") or 0)>(by_id[ident].get("id_sequencia") or 0):
+                by_id[ident]=a
+        alerts=list(by_id.values())
         by_code={m["codigo_ibge"]:m["nome"] for m in LOCAIS}
         by_name={normalize(m["nome"]):m["nome"] for m in LOCAIS}
         result=[]
@@ -121,16 +129,25 @@ def warnings():
             matched={by_code[x] for x in c if x in by_code}
             matched.update(by_name[x] for x in n if x in by_name)
             if not matched:continue
-            ident=str(alert.get("id") or alert.get("id_aviso") or alert.get("codigo") or "")
+            ident=str(alert.get("id_aviso") or alert.get("id") or alert.get("codigo") or "")
+            inicio=str(alert.get("data_inicio") or alert.get("inicio") or "")[:10]
+            fim=str(alert.get("data_fim") or alert.get("fim") or "")[:10]
+            horas_i=str(alert.get("hora_inicio") or "")
+            horas_f=str(alert.get("hora_fim") or "")
+            def descricao_limpa(value):
+                return "\n".join(str(x).strip() for x in value if str(x).strip()) if isinstance(value,list) else str(value or "")
             result.append({
-                "id":ident,"tipo":str(alert.get("tipo") or alert.get("evento") or alert.get("nome") or "Aviso meteorológico"),
+                "id":ident,
+                "tipo":str(alert.get("descricao") or alert.get("tipo") or alert.get("evento") or "Aviso meteorológico"),
                 "severidade":str(alert.get("severidade") or alert.get("nivel") or "Não informada"),
-                "inicio":alert.get("data_inicio") or alert.get("inicio"),"fim":alert.get("data_fim") or alert.get("fim"),
-                "descricao":str(alert.get("descricao") or ""),"riscos":str(alert.get("riscos") or ""),
-                "instrucoes":str(alert.get("instrucoes") or ""),"municipios":sorted(matched),
+                "inicio":inicio,"fim":fim,"hora_inicio":horas_i,"hora_fim":horas_f,
+                "janela":inicio+" "+horas_i+" até "+fim+" "+horas_f,
+                "descricao":str(alert.get("descricao") or ""),
+                "riscos":descricao_limpa(alert.get("riscos")),
+                "instrucoes":descricao_limpa(alert.get("instrucoes")),"municipios":sorted(matched),
                 "url":"https://avisos.inmet.gov.br/"+ident if ident.isdigit() else "https://avisos.inmet.gov.br/"
             })
-        write("avisos.json",{"atualizado_em":STAMP,"disponivel":True,"avisos":result,"fonte":"INMET (avisos ativos)"})
+        write("avisos.json",{"atualizado_em":STAMP,"disponivel":True,"avisos":result,"fonte":"INMET (avisos vigentes e futuros)"})
         print("Avisos na área:",len(result))
     except (requests.RequestException,ValueError,TypeError) as exc:
         write("avisos.json",{"atualizado_em":STAMP,"disponivel":False,"avisos":[],"fonte":"INMET","erro":str(exc)[:160]})

@@ -99,7 +99,7 @@
   function parseAlerts(obj,places){
     const alerts=Array.isArray(obj)?obj:Array.isArray(obj?.avisos)?obj.avisos:[...(obj?.hoje||[]),...(obj?.futuro||[])];
     const codeMap=new Map(places.map(m=>[String(m.codigo_ibge),m.nome])),names=new Map(places.map(m=>[norm(m.nome),m.nome]));
-    return alerts.flatMap(a=>{
+    const parsed=alerts.flatMap(a=>{
       if(!a||typeof a!=="object")return [];
       const mentions=JSON.stringify([a.geocodes,a.municipios,a.municipios_afetados]),matched=new Set();
       for(const id of mentions.match(/29\d{5}/g)||[])if(codeMap.has(id))matched.add(codeMap.get(id));
@@ -108,10 +108,15 @@
         if(names.has(norm(name)))matched.add(names.get(norm(name)));
       }
       if(!matched.size)return [];
-      const id=String(a.id||a.id_aviso||a.codigo||"");
-      return [{tipo:String(a.tipo||a.evento||a.nome||"Aviso meteorológico"),severidade:String(a.severidade||a.nivel||"Não informada"),inicio:a.inicio||a.data_inicio||"",fim:a.fim||a.data_fim||"",descricao:String(a.descricao||""),
+      const id=String(a.id_aviso||a.id||a.codigo||"");
+      const inicio=a.inicio||a.data_inicio||"",fim=a.fim||a.data_fim||"";
+      return [{id,tipo:String(a.tipo||a.descricao||a.evento||a.nome||"Aviso meteorológico"),severidade:String(a.severidade||a.nivel||"Não informada"),inicio,fim,
+        janela:String(a.janela||(String(inicio).slice(0,10)+" "+String(a.hora_inicio||"")+" até "+String(fim).slice(0,10)+" "+String(a.hora_fim||""))),
+        descricao:String(a.descricao||""),riscos:Array.isArray(a.riscos)?a.riscos.join(" "):String(a.riscos||""),
+        instrucoes:Array.isArray(a.instrucoes)?a.instrucoes.join(" "):String(a.instrucoes||""),
         municipios:[...matched],url:/^\d+$/.test(id)?"https://avisos.inmet.gov.br/"+id:"https://avisos.inmet.gov.br/"}];
     });
+    return [...new Map(parsed.map(a=>[a.id||a.tipo+"|"+a.janela,a])).values()];
   }
   async function loadAlerts(){
     let old=null,places=[];
@@ -199,7 +204,11 @@
     if(!s.alerts.length){n.innerHTML='<p class="rain-muted">Nenhum aviso identificado para os 57 municípios na última consulta ao INMET.</p>';return}
     n.innerHTML=s.alerts.map(a=>{
       const link=/^https:\/\/avisos\.inmet\.gov\.br\/[\w/-]*$/.test(a.url)?a.url:"https://avisos.inmet.gov.br/";
-      return '<div class="rain-alert"><strong>⚠️ '+esc(a.tipo)+" • "+esc(a.severidade)+'</strong>'+esc(a.municipios.join(", "))+(a.descricao?'<p>'+esc(a.descricao).slice(0,350)+'</p>':"")+'<p><a href="'+esc(link)+'" rel="noopener" target="_blank">Aviso completo</a></p></div>';
+      return '<div class="rain-alert"><strong>⚠️ '+esc(a.tipo)+" • "+esc(a.severidade)+'</strong><div>'+esc(a.municipios.join(", "))+'</div>'+
+        (a.janela?'<p><b>Validade:</b> '+esc(a.janela)+'</p>':"")+
+        (a.riscos?'<p><b>Riscos:</b> '+esc(a.riscos).slice(0,900)+'</p>':"")+
+        (a.instrucoes?'<p><b>Orientações:</b> '+esc(a.instrucoes).slice(0,900)+'</p>':"")+
+        '<p><a href="'+esc(link)+'" rel="noopener" target="_blank">Aviso completo</a></p></div>';
     }).join("");
   }
   function render(){
