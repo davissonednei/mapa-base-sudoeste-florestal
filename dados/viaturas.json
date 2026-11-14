@@ -10,6 +10,10 @@
       "condutor": "LOURIVAL",
       "gcif": "02"
     },
+    "2016": {
+      "condutor": "SD BEZERRA",
+      "gcif": "STAFF"
+    },
     "7167": {
       "condutor": "PEDRO DANTAS",
       "gcif": "03"
@@ -22,5 +26,6 @@
       "condutor": "CLAYTON",
       "gcif": "04"
     }
-  }
+  },
+  "porStaff": "2016"
 }

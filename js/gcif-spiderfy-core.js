@@ -132,7 +132,7 @@
     const deslocamento=ids.filter(id=>norm(GCIFS_DATA[id]?.status).includes("desloc")).length;
     const efetivoGcifs=Object.entries(EFETIVO_GCIFS||{}).filter(([id])=>id!=="STAFF").reduce((s,[,e])=>s+(Array.isArray(e)?e.length:0),0);
     const staff=(EFETIVO_GCIFS?.STAFF||[]).length;
-    const viaturas=ids.filter(id=>VIATURAS?.porGcif?.[id]).length;
+    const viaturas=Object.keys(VIATURAS?.frota||{}).length;
     box.innerHTML=`
       <div class="ops-stat"><b>${ids.length}</b><span>GCIFs</span></div>
       <div class="ops-stat combate"><b>${combate}</b><span>Combate</span></div>
@@ -447,8 +447,8 @@
       }
     }
     for(const m of EFETIVO_GCIFS?.STAFF||[]){
-      const texto=norm(`staff ${m.posto||""} ${m.nome||""} ${m.funcao||""}`);
-      if(texto.includes(q)) resultados.push({tipo:"staff",id:"STAFF",titulo:`${m.posto} ${m.nome}`,sub:`STAFF • ${m.funcao||"Função não informada"}`});
+      const texto=norm(`staff ${m.posto||""} ${m.nome||""} ${m.funcao||""} ${m.funcao_adicional||""} ${m.viatura||""}`);
+      if(texto.includes(q)) resultados.push({tipo:"staff",id:"STAFF",titulo:`${m.posto} ${m.nome}`,sub:`STAFF • ${[m.funcao,m.funcao_adicional,m.viatura?`🚒 ${m.viatura}`:null].filter(Boolean).join(" • ")}`});
     }
     for(const [id,g] of Object.entries(GCIFS_DATA||{})){
       const v=VIATURAS?.porGcif?.[id]||"";
@@ -508,7 +508,7 @@
       const nome=document.createElement("strong");
       nome.textContent=[m.posto,m.nome].filter(Boolean).join(" ");
       const funcao=document.createElement("small");
-      funcao.textContent=m.funcao||"Função não informada";
+      funcao.textContent=[m.funcao||"Função não informada",m.funcao_adicional||null,m.viatura?`🚒 Viatura ${m.viatura}`:null].filter(Boolean).join(" • ");
       pessoa.append(nome,funcao);
       box.appendChild(pessoa);
     }

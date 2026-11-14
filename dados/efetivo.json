@@ -151,7 +151,9 @@
       "posto": "SD",
       "nome": "BEZERRA",
       "funcao": "APOIO ADMINISTRATIVO",
-      "numero": null
+      "numero": null,
+      "funcao_adicional": "MOTORISTA",
+      "viatura": "2016"
     }
   ]
 }
