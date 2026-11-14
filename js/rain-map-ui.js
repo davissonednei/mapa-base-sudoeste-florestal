@@ -28,6 +28,8 @@ const layers={
 };
 let westPreviouslyVisible=false,westManaged=false;
 for(const group of Object.values(layers))allowed.add(group);
+// O renderer SVG também é um layer: impedir que o modo Florestal o remova.
+allowed.add(municipalRenderer);
 function allow(layer){allowed.add(layer);if(layer.eachLayer)layer.eachLayer(child=>allowed.add(child));return layer}
 const state={mode:"fogo",clouds:false,inmet:false,metric:periods[0][0],rows:new Map(),alerts:[],alertOK:false,forecastOK:false,forecastUpdated:null,alertUpdated:null,stale:false,loaded:false,selected:null,detailType:"chuva",loading:false,lastFetch:0};
 const btnCloud=el("toggleRainClouds"),btnINMET=el("toggleRainINMET"),details=el("rainDetail");
