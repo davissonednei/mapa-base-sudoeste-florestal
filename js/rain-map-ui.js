@@ -31,7 +31,7 @@ for(const group of Object.values(layers))allowed.add(group);
 // O renderer SVG também é um layer: impedir que o modo Florestal o remova.
 allowed.add(municipalRenderer);
 function allow(layer){allowed.add(layer);if(layer.eachLayer)layer.eachLayer(child=>allowed.add(child));return layer}
-const state={mode:"fogo",clouds:false,inmet:false,metric:periods[0][0],rows:new Map(),alerts:[],alertOK:false,forecastOK:false,forecastUpdated:null,alertUpdated:null,stale:false,loaded:false,selected:null,detailType:"chuva",loading:false,lastFetch:0,activeRainCount:0};
+const state={mode:"fogo",clouds:false,inmet:false,metric:periods[0][0],rows:new Map(),alerts:[],alertOK:false,forecastOK:false,forecastUpdated:null,alertUpdated:null,stale:false,loaded:false,selected:null,detailType:"chuva",loading:false,lastFetch:0,activeRainCount:0,currentFetchedAt:null};
 const btnCloud=el("toggleRainClouds"),btnINMET=el("toggleRainINMET"),details=el("rainDetail");
 const rainColors=["#c8ebf9","#84c5e5","#3c90c7","#225eac","#663fa8","#a631a2"];
 function color(x){let n=finite(x);return n===null?"#64748b":n<1?rainColors[0]:n<10?rainColors[1]:n<25?rainColors[2]:n<50?rainColors[3]:n<100?rainColors[4]:rainColors[5]}
@@ -68,7 +68,7 @@ function alertsIn(name){
 function currentRain(row){
   const rain=finite(row?.chuva_agora_mm);
   const at=Date.parse(String(row?.chuva_agora_horario_utc||""));
-  const fileAt=Date.parse(String(state.forecastUpdated||""));
+  const fileAt=Date.parse(String(state.currentFetchedAt||state.forecastUpdated||""));
   const now=Date.now();
   if(rain===null||rain<=0||!Number.isFinite(at)||!Number.isFinite(fileAt))return null;
   if(now-at>75*60000||now-at< -20*60000||now-fileAt>75*60000||now-fileAt< -20*60000)return null;
@@ -76,6 +76,47 @@ function currentRain(row){
 }
 function cleanLink(u){return /^https:\/\/avisos\.inmet\.gov\.br\/[0-9]*$/.test(String(u||""))?u:"https://avisos.inmet.gov.br/"}
 function readData(url){return fetch(url+"?v="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()})}
+// Fallback eventual: quando o GitHub Actions ainda não publicou a leitura nova,
+// obter apenas as condições atuais em 5 lotes, sem confundi-las com dados observados.
+async function fetchCurrentDirect(){
+  try{
+    const places=(await readData("dados/chuva/municipios.json")).municipios||[];
+    const groups=[];for(let i=0;i<places.length;i+=12)groups.push(places.slice(i,i+12));
+    const values=await Promise.allSettled(groups.map(async group=>{
+      const params=new URLSearchParams({
+        latitude:group.map(x=>x.lat).join(","),
+        longitude:group.map(x=>x.lng).join(","),
+        current:"precipitation,rain,showers",
+        timeformat:"unixtime",timezone:"America/Bahia"
+      });
+      const controller=new AbortController();
+      const timer=setTimeout(()=>controller.abort(),14000);
+      try{
+        const resp=await fetch("https://api.open-meteo.com/v1/forecast?"+params.toString(),{signal:controller.signal});
+        if(!resp.ok)throw Error("Open-Meteo "+resp.status);
+        const body=await resp.json(),records=Array.isArray(body)?body:[body];
+        if(records.length!==group.length)throw Error("Lote de chuva incompleto");
+        return records.map((x,i)=>({nome:group[i].nome,current:x.current||{}}));
+      }finally{clearTimeout(timer)}
+    }));
+    let updated=0;
+    for(const result of values){
+      if(result.status!=="fulfilled")continue;
+      for(const r of result.value){
+        const amount=finite(r.current.precipitation),at=r.current.time;
+        if(amount===null||!Number.isFinite(Number(at)))continue;
+        const name=normalize(r.nome),previous=state.rows.get(name)||{nome:r.nome};
+        previous.chuva_agora_mm=amount;
+        previous.chuva_agora_horario_utc=new Date(Number(at)*1000).toISOString();
+        previous.chuva_agora_intervalo_segundos=r.current.interval||900;
+        state.rows.set(name,previous);
+        updated++;
+      }
+    }
+    if(updated)state.currentFetchedAt=new Date().toISOString();
+    else console.warn("Sem leitura de precipitação atual do Open-Meteo");
+  }catch(e){console.warn("Fallback de chuva atual indisponível",e)}
+}
 async function loadData(force=false){
   if(state.loading)return;
   if(state.loaded&&!force&&Date.now()-state.lastFetch<20*60*1000){render();return}
@@ -86,6 +127,7 @@ async function loadData(force=false){
   if(p.status==="fulfilled"&&p.value.disponivel&&Array.isArray(p.value.municipios)&&p.value.municipios.length){
     state.rows=new Map(p.value.municipios.map(v=>[normalize(v.nome),v]));
     state.forecastUpdated=p.value.atualizado_em||null;
+    state.currentFetchedAt=null;
     state.forecastOK=true;
     state.stale=!state.forecastUpdated||Date.now()-Date.parse(state.forecastUpdated)>5*3600000;
   }else{
@@ -103,6 +145,13 @@ async function loadData(force=false){
     state.alerts=[];
     console.warn("Avisos INMET indisponíveis: sem inferir ausência de avisos.");
   }
+  // Quando o arquivo está antigo ou ainda não inclui current, consultar somente
+  // o valor atual e manter as previsões de 24/48/72h do arquivo separadas.
+  const freshCurrent=[...state.rows.values()].some(row=>{
+    const date=Date.parse(String(row.chuva_agora_horario_utc||""));
+    return finite(row.chuva_agora_mm)!==null&&Number.isFinite(date)&&Date.now()-date<60*60000&&Date.now()-date>= -20*60000;
+  });
+  if(!freshCurrent)await fetchCurrentDirect();
   state.loaded=true;state.lastFetch=Date.now();state.loading=false;render();
 }
 function setBaseBoundaries(rain){
