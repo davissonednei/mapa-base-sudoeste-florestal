@@ -35,7 +35,7 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:350px 1fr}aside{back
 .mode-choice.active{background:#862a2a;color:#fff}.mode-choice.rain.active{background:#185982}
 .mode-choice:focus-visible{outline:2px solid #89d0ff;outline-offset:2px}
 [hidden]{display:none!important}
-body[data-mode="chuva"] #florestalAside,body[data-mode="chuva"] #fireMapLegend,body[data-mode="chuva"] #headerOpsSummary,body[data-mode="chuva"] #toggleWind,body[data-mode="chuva"] #windLocalCard,body[data-mode="chuva"] #terrainToggle,body[data-mode="chuva"] #proximityControls,body[data-mode="chuva"] #dailyReportButton,body[data-mode="chuva"] #toggleMunicipioSelect{display:none!important}
+body[data-mode="chuva"] #fireMapLegend,body[data-mode="chuva"] #apiStatus,body[data-mode="chuva"] #florestalAside .notice,body[data-mode="chuva"] #florestalAside .fire-legend,body[data-mode="chuva"] #florestalAside .fire-layer,body[data-mode="chuva"] #florestalAside .front-layer,body[data-mode="chuva"] #rainAside,body[data-mode="chuva"] #toggleWind,body[data-mode="chuva"] #windLocalCard,body[data-mode="chuva"] #terrainToggle,body[data-mode="chuva"] #proximityControls,body[data-mode="chuva"] #toggleMunicipioSelect{display:none!important}
 body[data-mode="fogo"] #rainAside,body[data-mode="fogo"] #rainMapLegend,body[data-mode="fogo"] #rainDetail{display:none!important}
 .rain-summary{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:0 0 10px}
 .rain-stat{border:1px solid #274862;border-radius:10px;padding:10px 9px;background:linear-gradient(150deg,#123047,#102130)}
@@ -85,9 +85,10 @@ header .header-status{flex:0 0 auto;font-size:9px}
 .loading{top:54px}
 .rain-map-action{display:none!important}
 body[data-mode="chuva"] .rain-map-action{display:inline-flex!important;align-items:center;justify-content:center}
-body[data-mode="chuva"] main{display:block!important}
-body[data-mode="chuva"] main>aside{display:none!important}
-body[data-mode="chuva"] .map-wrap{height:100%;width:100%;min-height:0}
+body[data-mode="chuva"] main{display:grid!important;grid-template-columns:350px minmax(0,1fr)}
+body[data-mode="chuva"] main>aside{display:block!important}
+body[data-mode="chuva"] #florestalAside{display:block!important}
+body[data-mode="chuva"] .map-wrap{height:auto;width:auto;min-height:0}
 body[data-mode="chuva"] .map-legend{max-width:min(260px,calc(100% - 20px))}
 body[data-mode="chuva"] #rainDetail{top:54px;right:12px;width:min(390px,calc(100% - 24px));max-height:calc(100% - 110px)}
 .rain-map-action.active{border-color:#5dbbe8!important;background:#133d5d!important;color:#e2f6ff!important}
@@ -117,6 +118,26 @@ body[data-mode="chuva"] #rainDetail{top:54px;right:12px;width:min(390px,calc(100
 .rain-cloud-compact .rain-cloud-bubble{width:34px;min-width:34px;margin:0 auto;padding:2px 3px}
 .rain-cloud-compact .rain-cloud-bubble b{display:none}
 .rain-cloud-compact .rain-cloud-bubble span{font-size:18px}
+
+/* Sidebar única para Florestal e Chuva. Somente itens exclusivos do fogo são ocultados na Chuva. */
+#florestalAside .section-title.accordion-title{cursor:pointer}
+#florestalAside #munList.accordion-panel{display:none!important}
+#florestalAside #munList.accordion-panel.open{display:flex!important}
+body[data-mode="chuva"] #florestalAside .layers{margin-bottom:11px}
+body[data-mode="chuva"] #florestalAside #search{display:block}
+body[data-mode="chuva"] #florestalAside .section-title{display:block}
+body[data-mode="chuva"] #florestalAside .gcif-nav-list{display:flex}
+body[data-mode="chuva"] #florestalAside .gcif-nav-list.accordion-panel:not(.open){display:none!important}
+body[data-mode="chuva"] #florestalAside #headerOpsSummary{display:grid!important}
+@media(max-width:820px){
+  body[data-mode="chuva"] main{display:flex!important;flex-direction:column!important}
+  body[data-mode="chuva"] main>aside{display:block!important;flex:none}
+  body[data-mode="chuva"] .map-wrap{height:72vh!important;min-height:540px!important;width:100%}
+  body[data-mode="chuva"] #florestalAside .layers{display:flex}
+  body[data-mode="chuva"] #florestalAside #munList:not(.open){display:none!important}
+  body[data-mode="chuva"] #florestalAside #munList.open{display:flex!important}
+}
+
 </style>
 </head>
 <body data-mode="fogo">

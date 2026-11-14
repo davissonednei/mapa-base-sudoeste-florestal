@@ -139,7 +139,7 @@
 
   function prepararSidebar(){
     const titulos=[...document.querySelectorAll(".section-title")];
-    const tituloMunicipios=titulos.find(el=>el.textContent.includes("Municípios do Sudoeste"));
+    const tituloMunicipios=titulos.find(el=>el.closest("#florestalAside")&&el.textContent.includes("Municípios do 7º BBM"));
     const listaMunicipios=document.getElementById("munList");
     configurarAccordion(tituloMunicipios,listaMunicipios);
 

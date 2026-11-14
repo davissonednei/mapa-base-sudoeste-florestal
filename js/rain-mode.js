@@ -32,7 +32,7 @@
     if(next===s.mode)return;
     s.mode=next;
     const rain=active();
-    document.body.dataset.mode=next;panel.hidden=!rain;$("rainMapLegend").hidden=!rain;detail.hidden=true;s.selected=null;
+    document.body.dataset.mode=next;panel.hidden=true;$("rainMapLegend").hidden=!rain;detail.hidden=true;s.selected=null;
     tagF.classList.toggle("active",!rain);tagR.classList.toggle("active",rain);
     tagF.setAttribute("aria-pressed",String(!rain));tagR.setAttribute("aria-pressed",String(rain));
     if(logo)logo.textContent=rain?"🌧️":"🔥";
