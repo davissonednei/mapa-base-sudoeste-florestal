@@ -3,7 +3,7 @@
   "use strict";
   if(typeof L==="undefined"||typeof map==="undefined")return;
   const rainLayer=L.layerGroup(),warningLayer=L.layerGroup(),rainElements=new Set(),hiddenFire=new Set();
-  const s={mode:"fogo",metric:"proximas_24h_mm",rows:new Map(),alerts:[],alertsOK:false,forecastAt:null,alertAt:null,stale:false,loading:false,rainOn:true,alertOn:true,selected:null};
+  const s={mode:"fogo",metric:"proximas_24h_mm",rows:new Map(),alerts:[],alertsOK:false,forecastAt:null,alertAt:null,stale:false,loading:false,rainOn:false,alertOn:false,selected:null};
   const $=id=>document.getElementById(id);
   const norm=x=>String(x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
   const esc=x=>String(x==null?"":x).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
@@ -19,6 +19,7 @@
   const logo=document.querySelector(".brand .logo"),sub=document.querySelector(".brand .sub"),originalSub=sub?.textContent;
 
   function permitted(layer){
+    if(window.__rainMapExtraAllowed?.has(layer))return true;
     if([streetLayer,satelliteLayer,westLayer,contextLayer,baseLayer,guarnicaoLayer,rainLayer,warningLayer].includes(layer)||rainElements.has(layer))return true;
     return [westLayer,contextLayer,baseLayer,guarnicaoLayer,rainLayer,warningLayer].some(g=>g.hasLayer(layer));
   }

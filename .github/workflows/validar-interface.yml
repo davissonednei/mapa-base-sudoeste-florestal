@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'js/rain-mode.js'
+      - 'js/rain-map-ui.js'
       - 'index.html'
       - 'scripts/update_rain_sudoeste.py'
       - 'dados/chuva/municipios.json'
@@ -35,6 +36,7 @@ jobs:
           exec > >(tee /tmp/interface-check.log) 2>&1
           set -euo pipefail
           node --check js/rain-mode.js
+          node --check js/rain-map-ui.js
           python -m py_compile scripts/update_rain_sudoeste.py
           python - <<'PY'
           import json
@@ -55,6 +57,8 @@ jobs:
           assert required.issubset(set(parsed.ids)),sorted(required-set(parsed.ids))
           assert len(parsed.ids)==len(set(parsed.ids)), "ID HTML duplicado"
           assert "js/rain-mode.js" in parsed.scripts
+          assert "js/rain-map-ui.js" in parsed.scripts
+          assert {"toggleRainClouds","toggleRainINMET"}.issubset(set(parsed.ids))
           municipios=json.loads(Path("dados/chuva/municipios.json").read_text(encoding="utf-8"))["municipios"]
           assert len(municipios)==len({m["codigo_ibge"] for m in municipios})==57
           print("Interface e dados: OK, 57 municípios.")
