@@ -9,10 +9,10 @@ const finite=x=>x===null||x===undefined||x===""||!Number.isFinite(Number(x))?nul
 const fmt=x=>finite(x)===null?"—":finite(x).toLocaleString("pt-BR",{maximumFractionDigits:1})+" mm";
 const pct=x=>finite(x)===null?"—":Math.round(finite(x))+"%";
 const periods=[
+  ["chuva_agora_mm","Chuva agora"],
   ["proximas_24h_mm","Próximas 24h"],
   ["proximas_48h_mm","Próximas 48h"],
-  ["proximas_72h_mm","Próximas 72h"],
-  ["passadas_24h_estimativa_mm","Últimas 24h*"]
+  ["proximas_72h_mm","Próximas 72h"]
 ];
 const allowed=window.__rainMapExtraAllowed=new WeakSet();
 // Usar SVG em pane própria para que as divisões fiquem visíveis mesmo com Canvas no mapa.
@@ -65,14 +65,20 @@ function alertsIn(name){
 }
 // Open-Meteo 'current.precipitation' reflete o período anterior (15 min modelados);
 // a ausência do dado ou desatualização não é interpretada como chuva zero.
-function currentRain(row){
-  const rain=finite(row?.chuva_agora_mm);
+// Uma leitura válida de 0 mm indica ausência de precipitação modelada;
+ // leitura ausente ou velha NÃO indica céu seco.
+function currentReading(row){
+  const amount=finite(row?.chuva_agora_mm);
   const at=Date.parse(String(row?.chuva_agora_horario_utc||""));
   const fileAt=Date.parse(String(state.currentFetchedAt||state.forecastUpdated||""));
   const now=Date.now();
-  if(rain===null||rain<=0||!Number.isFinite(at)||!Number.isFinite(fileAt))return null;
+  if(amount===null||!Number.isFinite(at)||!Number.isFinite(fileAt))return null;
   if(now-at>75*60000||now-at< -20*60000||now-fileAt>75*60000||now-fileAt< -20*60000)return null;
-  return rain;
+  return {amount,at,interval:finite(row?.chuva_agora_intervalo_segundos)};
+}
+function currentRain(row){
+  const reading=currentReading(row);
+  return reading&&reading.amount>0?reading.amount:null;
 }
 function cleanLink(u){return /^https:\/\/avisos\.inmet\.gov\.br\/[0-9]*$/.test(String(u||""))?u:"https://avisos.inmet.gov.br/"}
 function readData(url){return fetch(url+"?v="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()})}
@@ -272,18 +278,23 @@ function showDetails(name,kind="chuva"){
   if(!isRain())return;
   state.selected=name;state.detailType=kind;
   const row=state.rows.get(normalize(name)),alerts=alertsIn(name);
+  const reading=currentReading(row);
+  const shown=state.metric==="chuva_agora_mm"?(reading?reading.amount:null):row?.[state.metric];
   let html='<div class="rain-detail-head"><strong>'+htmlSafe(name)+'</strong><button type="button" id="rainClose" class="rain-close" aria-label="Fechar informações">✕</button></div>';
   if(kind==="inmet")html+='<p class="rain-muted">Avisos meteorológicos oficiais do INMET neste município.</p>';
   html+='<div class="rain-periods" role="group" aria-label="Selecionar período de chuva">'+periods.map(([key,label])=>
     '<button type="button" class="rain-period'+(state.metric===key?' selected':'')+'" data-map-period="'+htmlSafe(key)+'">'+htmlSafe(label)+'</button>').join("")+'</div>';
-  const label=periods.find(x=>x[0]===state.metric)?.[1]||"Próximas 24h";
-  html+='<div class="rain-metric-hero"><b>'+htmlSafe(fmt(row?.[state.metric]))+'</b><span>'+htmlSafe(label)+' • '+(state.metric.startsWith("passadas")?"Estimativa do modelo":"Previsão Open-Meteo")+'</span></div>';
-  if(row){
-    const nowRain=currentRain(row),validTime=String(row.chuva_agora_horario_utc||"");
-    html+='<p class="rain-muted"><strong>Chuva agora (estimativa modelada):</strong> '+(nowRain!==null?htmlSafe(fmt(nowRain))+" no período recente":Number.isFinite(Date.parse(validTime))&&Date.now()-Date.parse(validTime)<75*60000?"Sem precipitação indicada no ponto amostrado":"Dado atual indisponível ou desatualizado")+'</p>';
+  const label=periods.find(x=>x[0]===state.metric)?.[1]||"Chuva agora";
+  html+='<div class="rain-metric-hero"><b>'+htmlSafe(fmt(shown))+'</b><span>'+htmlSafe(label)+' • '+(state.metric==="chuva_agora_mm"?"Estimativa atual do Open-Meteo":"Previsão Open-Meteo")+'</span></div>';
+  if(reading){
+    const hora=new Date(reading.at).toLocaleString("pt-BR",{timeZone:"America/Bahia",hour:"2-digit",minute:"2-digit"});
+    const minutos=reading.interval?Math.round(reading.interval/60):15;
+    html+='<p class="rain-muted"><strong>Situação atual:</strong> '+(reading.amount>0?"Precipitação indicada":"Sem precipitação indicada")+' no ponto amostrado • '+htmlSafe(hora)+' • estimativa do período anterior (~'+minutos+' min).</p>';
+  }else{
+    html+='<p class="rain-muted"><strong>Chuva agora:</strong> dado indisponível ou desatualizado. Isso não significa ausência de chuva.</p>';
   }
   if(row){
-    const cards=[["Próximas 24h",fmt(row.proximas_24h_mm)],["Próximas 48h",fmt(row.proximas_48h_mm)],["Próximas 72h",fmt(row.proximas_72h_mm)],["Últimas 24h • modelo",fmt(row.passadas_24h_estimativa_mm)],["Probabilidade máxima 24h",pct(row.probabilidade_max_24h_pct)],["Pico horário 72h",fmt(row.pico_horario_72h_mm)]];
+    const cards=[["Chuva agora",fmt(reading?.amount)],["Próximas 48h",fmt(row.proximas_48h_mm)],["Próximas 72h",fmt(row.proximas_72h_mm)],["Últimas 24h • modelo",fmt(row.passadas_24h_estimativa_mm)],["Probabilidade máxima 24h",pct(row.probabilidade_max_24h_pct)],["Pico horário 72h",fmt(row.pico_horario_72h_mm)]];
     html+='<div class="rain-kpis">'+cards.map(x=>'<div class="rain-kpi"><strong>'+htmlSafe(x[1])+'</strong><small>'+htmlSafe(x[0])+'</small></div>').join("")+'</div>';
     html+='<div class="rain-muted">Precipitação por hora prevista</div>'+chart(row.serie_horaria);
     html+='<p class="rain-muted">Temperatura: '+htmlSafe(row.temperatura_c==null?"—":row.temperatura_c+" °C")+' • Umidade: '+htmlSafe(pct(row.umidade_pct))+' • Vento: '+htmlSafe(row.vento_kmh==null?"—":row.vento_kmh+" km/h")+'</p>';
