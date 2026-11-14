@@ -106,14 +106,14 @@
   }
 
   function prepararResumoCabecalho(){
-    const header=document.querySelector("header");
-    if(!header||document.getElementById("headerOpsSummary")) return;
-    const tag=header.querySelector(".tag");
+    const sidebar=document.getElementById("florestalAside");
+    if(!sidebar||document.getElementById("headerOpsSummary")) return;
     const box=document.createElement("div");
     box.id="headerOpsSummary";
     box.className="header-ops-summary";
     box.innerHTML=`<div class="ops-stat"><b>—</b><span>GCIFs</span></div>`;
-    header.insertBefore(box,tag||null);
+    const api=sidebar.querySelector("#apiStatus");
+    sidebar.insertBefore(box,api||sidebar.firstChild);
   }
 
   function atualizarResumoCabecalho(){
