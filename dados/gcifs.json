@@ -1,22 +1,42 @@
 {
   "01": {
-    "municipio": "",
-    "local": "Localização pendente",
-    "status": "Não informado"
+    "municipio": "Brumado",
+    "local": "2ª Companhia do 7º BBM — Brumado",
+    "status": "Não informado",
+    "lat": -14.212431376902039,
+    "lng": -41.67874843304984,
+    "base_lat": -14.212431376902039,
+    "base_lng": -41.67874843304984,
+    "base_local": "2ª Companhia do 7º BBM — Brumado"
   },
   "02": {
-    "municipio": "",
-    "local": "Localização pendente",
-    "status": "Não informado"
+    "municipio": "Guanambi",
+    "local": "3ª Companhia do 7º BBM — Guanambi",
+    "status": "Não informado",
+    "lat": -14.21341197903119,
+    "lng": -42.77752191955733,
+    "base_lat": -14.21341197903119,
+    "base_lng": -42.77752191955733,
+    "base_local": "3ª Companhia do 7º BBM — Guanambi"
   },
   "03": {
-    "municipio": "",
-    "local": "Localização pendente",
-    "status": "Não informado"
+    "municipio": "Vitória da Conquista",
+    "local": "Base Florestal Sudoeste — 7º BBM",
+    "status": "Não informado",
+    "lat": -14.866124758187732,
+    "lng": -40.863157433033564,
+    "base_lat": -14.866124758187732,
+    "base_lng": -40.863157433033564,
+    "base_local": "Base Florestal Sudoeste — Vitória da Conquista"
   },
   "04": {
-    "municipio": "",
-    "local": "Localização pendente",
-    "status": "Não informado"
+    "municipio": "Vitória da Conquista",
+    "local": "Base Florestal Sudoeste — 7º BBM",
+    "status": "Não informado",
+    "lat": -14.866124758187732,
+    "lng": -40.863157433033564,
+    "base_lat": -14.866124758187732,
+    "base_lng": -40.863157433033564,
+    "base_local": "Base Florestal Sudoeste — Vitória da Conquista"
   }
 }

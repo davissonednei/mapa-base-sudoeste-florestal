@@ -25,10 +25,11 @@
       "numero": null
     },
     {
-      "posto": "",
+      "posto": "SD",
       "nome": "WILLIAM",
       "funcao": "",
-      "numero": null
+      "numero": null,
+      "equipamento": "🚁 DRONE"
     }
   ],
   "02": [
