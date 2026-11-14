@@ -1,16 +1,19 @@
 {
-  "atualizado_em": "2026-11-14T13:02:53Z",
+  "atualizado_em": "2026-11-14T13:20:05Z",
   "disponivel": true,
   "avisos": [
     {
-      "id": "56404",
-      "tipo": "Aviso meteorológico",
+      "id": "28699",
+      "tipo": "Tempestade",
       "severidade": "Perigo Potencial",
-      "inicio": "2026-11-14T00:00:00.000Z",
-      "fim": "2026-11-14T00:00:00.000Z",
+      "inicio": "2026-11-14",
+      "fim": "2026-11-14",
+      "hora_inicio": "08:37",
+      "hora_fim": "23:59",
+      "janela": "2026-11-14 08:37 até 2026-11-14 23:59",
       "descricao": "Tempestade",
-      "riscos": "['Chuva entre 20 e 30 mm/h ou até 50 mm/dia, ventos intensos (40-60 km/h), e queda de granizo. Baixo risco de corte de energia elétrica, estragos em plantações, queda de galhos de árvores e de alagamentos.']",
-      "instrucoes": "['Em caso de rajadas de vento: (não se abrigue debaixo de árvores, pois há leve risco de queda e descargas elétricas e não estacione veículos próximos a torres de transmissão e placas de propaganda). ', 'Evite usar aparelhos eletrônicos ligados à tomada. ', 'Obtenha mais informações junto à Defesa Civil (telefone 199) e ao Corpo de Bombeiros (telefone 193).']",
+      "riscos": "Chuva entre 20 e 30 mm/h ou até 50 mm/dia, ventos intensos (40-60 km/h), e queda de granizo. Baixo risco de corte de energia elétrica, estragos em plantações, queda de galhos de árvores e de alagamentos.",
+      "instrucoes": "Em caso de rajadas de vento: (não se abrigue debaixo de árvores, pois há leve risco de queda e descargas elétricas e não estacione veículos próximos a torres de transmissão e placas de propaganda).\nEvite usar aparelhos eletrônicos ligados à tomada.\nObtenha mais informações junto à Defesa Civil (telefone 199) e ao Corpo de Bombeiros (telefone 193).",
       "municipios": [
         "Abaíra",
         "Anagé",
@@ -70,17 +73,20 @@
         "Vitória da Conquista",
         "Érico Cardoso"
       ],
-      "url": "https://avisos.inmet.gov.br/56404"
+      "url": "https://avisos.inmet.gov.br/28699"
     },
     {
-      "id": "56408",
-      "tipo": "Aviso meteorológico",
+      "id": "28702",
+      "tipo": "Tempestade",
       "severidade": "Perigo Potencial",
-      "inicio": "2026-11-15T00:00:00.000Z",
-      "fim": "2026-11-15T00:00:00.000Z",
+      "inicio": "2026-11-15",
+      "fim": "2026-11-15",
+      "hora_inicio": "00:00",
+      "hora_fim": "23:59",
+      "janela": "2026-11-15 00:00 até 2026-11-15 23:59",
       "descricao": "Tempestade",
-      "riscos": "['Chuva entre 20 e 30 mm/h ou até 50 mm/dia, ventos intensos (40-60 km/h), e queda de granizo. Baixo risco de corte de energia elétrica, estragos em plantações, queda de galhos de árvores e de alagamentos.']",
-      "instrucoes": "['Em caso de rajadas de vento: (não se abrigue debaixo de árvores, pois há leve risco de queda e descargas elétricas e não estacione veículos próximos a torres de transmissão e placas de propaganda). ', 'Evite usar aparelhos eletrônicos ligados à tomada. ', 'Obtenha mais informações junto à Defesa Civil (telefone 199) e ao Corpo de Bombeiros (telefone 193).']",
+      "riscos": "Chuva entre 20 e 30 mm/h ou até 50 mm/dia, ventos intensos (40-60 km/h), e queda de granizo. Baixo risco de corte de energia elétrica, estragos em plantações, queda de galhos de árvores e de alagamentos.",
+      "instrucoes": "Em caso de rajadas de vento: (não se abrigue debaixo de árvores, pois há leve risco de queda e descargas elétricas e não estacione veículos próximos a torres de transmissão e placas de propaganda).\nEvite usar aparelhos eletrônicos ligados à tomada.\nObtenha mais informações junto à Defesa Civil (telefone 199) e ao Corpo de Bombeiros (telefone 193).",
       "municipios": [
         "Anagé",
         "Aracatu",
@@ -116,17 +122,20 @@
         "Urandi",
         "Vitória da Conquista"
       ],
-      "url": "https://avisos.inmet.gov.br/56408"
+      "url": "https://avisos.inmet.gov.br/28702"
     },
     {
-      "id": "56410",
-      "tipo": "Aviso meteorológico",
+      "id": "28704",
+      "tipo": "Tempestade",
       "severidade": "Perigo Potencial",
-      "inicio": "2026-11-16T00:00:00.000Z",
-      "fim": "2026-11-16T00:00:00.000Z",
+      "inicio": "2026-11-16",
+      "fim": "2026-11-16",
+      "hora_inicio": "00:00",
+      "hora_fim": "23:59",
+      "janela": "2026-11-16 00:00 até 2026-11-16 23:59",
       "descricao": "Tempestade",
-      "riscos": "['Chuva entre 20 e 30 mm/h ou até 50 mm/dia, ventos intensos (40-60 km/h), e queda de granizo. Baixo risco de corte de energia elétrica, estragos em plantações, queda de galhos de árvores e de alagamentos.']",
-      "instrucoes": "['Em caso de rajadas de vento: (não se abrigue debaixo de árvores, pois há leve risco de queda e descargas elétricas e não estacione veículos próximos a torres de transmissão e placas de propaganda). ', 'Evite usar aparelhos eletrônicos ligados à tomada. ', 'Obtenha mais informações junto à Defesa Civil (telefone 199) e ao Corpo de Bombeiros (telefone 193).']",
+      "riscos": "Chuva entre 20 e 30 mm/h ou até 50 mm/dia, ventos intensos (40-60 km/h), e queda de granizo. Baixo risco de corte de energia elétrica, estragos em plantações, queda de galhos de árvores e de alagamentos.",
+      "instrucoes": "Em caso de rajadas de vento: (não se abrigue debaixo de árvores, pois há leve risco de queda e descargas elétricas e não estacione veículos próximos a torres de transmissão e placas de propaganda).\nEvite usar aparelhos eletrônicos ligados à tomada.\nObtenha mais informações junto à Defesa Civil (telefone 199) e ao Corpo de Bombeiros (telefone 193).",
       "municipios": [
         "Abaíra",
         "Anagé",
@@ -186,8 +195,8 @@
         "Vitória da Conquista",
         "Érico Cardoso"
       ],
-      "url": "https://avisos.inmet.gov.br/56410"
+      "url": "https://avisos.inmet.gov.br/28704"
     }
   ],
-  "fonte": "INMET (avisos ativos)"
+  "fonte": "INMET (avisos vigentes e futuros)"
 }
