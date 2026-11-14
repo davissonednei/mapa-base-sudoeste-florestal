@@ -18,6 +18,12 @@
     .accordion-panel{display:none!important;margin-top:6px}
     .accordion-panel.open{display:flex!important}
     .gcif-nav-list{flex-direction:column;gap:5px}
+    .staff-nav-list{flex-direction:column;gap:5px}
+    .staff-nav-person{border:1px solid #284154;background:#0c1e2c;border-radius:9px;padding:10px}
+    .staff-nav-person strong{display:block;font-size:11px;color:#f2f8ff;font-weight:850}
+    .staff-nav-person small{display:block;font-size:9px;color:#9ec8e3;margin-top:4px;font-weight:700}
+    .staff-nav-list.accordion-panel:not(.open){display:none!important}
+    body[data-mode="chuva"] #florestalAside .staff-nav-list.accordion-panel.open{display:flex!important}
     .gcif-nav{width:100%;display:grid;grid-template-columns:1fr auto;gap:8px;text-align:left;padding:9px 10px;border:1px solid transparent;border-radius:9px;background:#0a151f;color:white;cursor:pointer}
     .gcif-nav:hover{border-color:#334b60;background:#0d1a26}
     .gcif-nav-name{font-size:12px;font-weight:800}.gcif-nav-meta{font-size:9px;color:#9dafbe;margin-top:3px}
@@ -151,6 +157,21 @@
       const lista=document.createElement("div");
       lista.id="gcifNavList";
       lista.className="gcif-nav-list";
+      tituloBases.parentNode.insertBefore(titulo,tituloBases);
+      tituloBases.parentNode.insertBefore(lista,tituloBases);
+      configurarAccordion(titulo,lista);
+      lista.classList.add("open");
+      titulo.classList.add("open");
+      titulo.setAttribute("aria-expanded","true");
+    }
+
+    if(tituloBases&&!document.getElementById("staffNavList")){
+      const titulo=document.createElement("div");
+      titulo.className="section-title";
+      titulo.textContent="STAFF • Comando e apoio";
+      const lista=document.createElement("div");
+      lista.id="staffNavList";
+      lista.className="staff-nav-list";
       tituloBases.parentNode.insertBefore(titulo,tituloBases);
       tituloBases.parentNode.insertBefore(lista,tituloBases);
       configurarAccordion(titulo,lista);
@@ -425,6 +446,10 @@
         if(texto.includes(q)) resultados.push({tipo:"militar",id,titulo:`${m.posto} ${m.nome}`,sub:`GCIF ${id}${m.funcao?` • ${m.funcao}`:""}${m.equipamento?` • ${m.equipamento}`:""}`});
       }
     }
+    for(const m of EFETIVO_GCIFS?.STAFF||[]){
+      const texto=norm(`staff ${m.posto||""} ${m.nome||""} ${m.funcao||""}`);
+      if(texto.includes(q)) resultados.push({tipo:"staff",id:"STAFF",titulo:`${m.posto} ${m.nome}`,sub:`STAFF • ${m.funcao||"Função não informada"}`});
+    }
     for(const [id,g] of Object.entries(GCIFS_DATA||{})){
       const v=VIATURAS?.porGcif?.[id]||"";
       const texto=norm(`gcif ${id} ${g.municipio||""} ${g.local||""} ${g.status||""} ${v}`);
@@ -444,6 +469,17 @@
     box.querySelectorAll(".ops-search-item").forEach(btn=>btn.onclick=()=>{
       const id=btn.dataset.gcif;
       box.classList.remove("show");
+      if(id==="STAFF"){
+        const lista=document.getElementById("staffNavList");
+        const titulo=lista?.previousElementSibling;
+        if(lista&&!lista.classList.contains("open")){
+          lista.classList.add("open");
+          titulo?.classList.add("open");
+          titulo?.setAttribute("aria-expanded","true");
+        }
+        lista?.scrollIntoView({behavior:"smooth",block:"nearest"});
+        return;
+      }
       irParaGcif(id);
     });
   }
@@ -460,6 +496,22 @@
       if(primeiro){e.preventDefault();primeiro.click()}
     });
     searchOperacional.addEventListener("blur",()=>setTimeout(()=>document.getElementById("opsSearchResults")?.classList.remove("show"),180));
+  }
+
+  function renderListaStaff(){
+    const box=document.getElementById("staffNavList");
+    if(!box)return;
+    box.replaceChildren();
+    for(const m of EFETIVO_GCIFS?.STAFF||[]){
+      const pessoa=document.createElement("div");
+      pessoa.className="staff-nav-person";
+      const nome=document.createElement("strong");
+      nome.textContent=[m.posto,m.nome].filter(Boolean).join(" ");
+      const funcao=document.createElement("small");
+      funcao.textContent=m.funcao||"Função não informada";
+      pessoa.append(nome,funcao);
+      box.appendChild(pessoa);
+    }
   }
 
   function renderListaGcifs(){
@@ -519,6 +571,7 @@
     document.getElementById("gcifCount").textContent = Object.keys(GCIFS_DATA).length;
     document.getElementById("pointCount").textContent = grupos.length;
     renderListaGcifs();
+    renderListaStaff();
     atualizarResumoCabecalho();
     if(gcifSelecionada&&GCIFS_DATA[gcifSelecionada]) renderFichaRapida(gcifSelecionada);
   };

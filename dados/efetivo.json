@@ -128,5 +128,30 @@
       "numero": null
     }
   ],
-  "STAFF": []
+  "STAFF": [
+    {
+      "posto": "TEN CEL",
+      "nome": "BAHIA",
+      "funcao": "COMANDANTE DA BASE",
+      "numero": null
+    },
+    {
+      "posto": "ASP",
+      "nome": "DAVISSON",
+      "funcao": "OFICIAL DE OPERAÇÕES",
+      "numero": null
+    },
+    {
+      "posto": "SD",
+      "nome": "JOILSON",
+      "funcao": "LOGÍSTICA",
+      "numero": null
+    },
+    {
+      "posto": "SD",
+      "nome": "BEZERRA",
+      "funcao": "APOIO ADMINISTRATIVO",
+      "numero": null
+    }
+  ]
 }
