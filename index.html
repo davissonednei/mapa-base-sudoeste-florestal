@@ -264,7 +264,7 @@ async function getRoadKm(rec){
   try{
     const cached=parseFloat(localStorage.getItem(cacheKey(rec)));
     if(Number.isFinite(cached)&&cached>=0){
-      rec.roadKm=cached;rec.roadSource="OpenStreetMap/OSRM";return cached;
+      rec.roadKm=cached;rec.roadSource="OpenStreetMap/OSRM";updateRoadDistanceLabel(rec);return cached;
     }
   }catch(err){}
   try{
@@ -276,8 +276,9 @@ async function getRoadKm(rec){
     if(!Number.isFinite(km))throw new Error("Rota não encontrada");
     rec.roadKm=km;rec.roadSource="OpenStreetMap/OSRM";rec.roadError=null;
     try{localStorage.setItem(cacheKey(rec),String(km))}catch(err){}
+    updateRoadDistanceLabel(rec);
     return km;
-  }catch(err){rec.roadError="Rota rodoviária indisponível";return null}
+  }catch(err){rec.roadError="Rota rodoviária indisponível";updateRoadDistanceLabel(rec);return null}
 }
 function popupMunicipio(rec){
   const bairro=rec.bbm?"7º BBM • Área de responsabilidade":"Fora da área do 7º BBM";
@@ -285,8 +286,104 @@ function popupMunicipio(rec){
   return '<div class="popup-title">'+rec.nome+'</div><div style="margin-bottom:8px"><span class="badge">'+bairro+'</span></div><div class="popup-row"><span>Da Base Sudoeste à sede urbana (rodovia)</span><b>'+road+'</b></div><div class="popup-foot">Origem: Base Sudoeste (localização informada pela operação). Destino: ponto de referência da sede urbana de '+rec.nome+'. Referência municipal: Municípios Brasileiros; rota: '+(rec.roadSource||"OSRM/OpenStreetMap")+'. Distância estimada, não até o centro geográfico do município.</div>';
 }
 function makeMunicipioLayer(feature,rec,isWest){const layer=L.geoJSON(feature,{style:{color:isWest?"#ef4444":"#697887",weight:isWest?1.8:.65,fillColor:isWest?"#ef4444":"#64748b",fillOpacity:isWest?.25:.055}});layer.eachLayer(l=>{l.bindTooltip(rec.nome,{sticky:true,direction:"top"});l.bindPopup(()=>popupMunicipio(rec));l.on("popupopen",async()=>{if(!Number.isFinite(rec.roadKm)){await getRoadKm(rec);l.setPopupContent(popupMunicipio(rec))}});l.on("mouseover",()=>l.setStyle({weight:2.7,fillOpacity:isWest?.40:.15}));l.on("mouseout",()=>l.setStyle({weight:isWest?1.8:.65,fillOpacity:isWest?.25:.055}))});return layer}
-function buildList(){const box=document.getElementById("munList");box.innerHTML="";const selecionados=records.filter(isCoberturaOeste).sort((a,b)=>Number(a.bbm)-Number(b.bbm)||a.nome.localeCompare(b.nome,"pt-BR"));document.getElementById("westCount").textContent=selecionados.length;let grupo="";for(const r of selecionados){if(r.bbm!==grupo){grupo=r.bbm;const h=document.createElement("div");h.className="mun-subgroup";h.textContent=`${Number(grupo)}º BBM — ${selecionados.filter(x=>x.bbm===grupo).length} municípios`;box.appendChild(h)}const b=document.createElement("button");b.className="mun";b.dataset.name=r.nome;b.innerHTML=`<div><div class="mun-name">${r.nome}</div><div class="mun-meta">Em linha reta: Base → sede urbana</div></div><div class="km">${fmtKm(r.westKm)}</div>`;b.onclick=()=>{const layer=featureLayers[norm(r.nome)];if(layer){map.fitBounds(layer.getBounds(),{padding:[28,28],maxZoom:9});layer.openPopup()}};box.appendChild(b)}}
-async function hydrateRoadDistances(list){const queue=list.filter(r=>!Number.isFinite(r.roadKm));for(let i=0;i<queue.length;i+=3){await Promise.all(queue.slice(i,i+3).map(async r=>{await getRoadKm(r);const el=document.getElementById("km-"+norm(r.nome).replace(/\s+/g,'-'));if(el)el.textContent=fmtKm(r.roadKm)}))}}
+function roadDistanceLabel(rec){
+  if(Number.isFinite(rec.roadKm))return fmtKm(rec.roadKm);
+  try{
+    const cached=parseFloat(localStorage.getItem(cacheKey(rec)));
+    if(Number.isFinite(cached)&&cached>=0){
+      rec.roadKm=cached;rec.roadSource="OpenStreetMap/OSRM";return fmtKm(cached);
+    }
+  }catch(e){}
+  return rec.roadError?"indisponível":"calculando…";
+}
+function updateRoadDistanceLabel(rec){
+  const id="km-"+norm(rec.nome).replace(/\s+/g,"-");
+  const el=document.getElementById(id);
+  if(el)el.textContent=roadDistanceLabel(rec);
+}
+function buildList(){
+  const box=document.getElementById("munList");
+  box.innerHTML="";
+  const selecionados=records.filter(isCoberturaOeste).sort((a,b)=>Number(a.bbm)-Number(b.bbm)||a.nome.localeCompare(b.nome,"pt-BR"));
+  document.getElementById("westCount").textContent=selecionados.length;
+  let grupo="";
+  for(const r of selecionados){
+    if(r.bbm!==grupo){
+      grupo=r.bbm;
+      const h=document.createElement("div");
+      h.className="mun-subgroup";
+      h.textContent=Number(grupo)+"º BBM — "+selecionados.filter(x=>x.bbm===grupo).length+" municípios";
+      box.appendChild(h);
+    }
+    const button=document.createElement("button");
+    button.className="mun";
+    button.dataset.name=r.nome;
+    const label=document.createElement("div");
+    const name=document.createElement("div");
+    name.className="mun-name";name.textContent=r.nome;
+    const meta=document.createElement("div");
+    meta.className="mun-meta";meta.textContent="Distância por rodovia • Base → sede urbana";
+    label.append(name,meta);
+    const km=document.createElement("div");
+    km.className="km";km.id="km-"+norm(r.nome).replace(/\s+/g,"-");
+    km.textContent=roadDistanceLabel(r);
+    button.append(label,km);
+    button.onclick=()=>{
+      const layer=featureLayers[norm(r.nome)];
+      if(layer){map.fitBounds(layer.getBounds(),{padding:[28,28],maxZoom:9});layer.openPopup()}
+    };
+    box.appendChild(button);
+  }
+  // O cálculo em lote inicia ao expandir a lista (e não congestiona a API
+  // enquanto a lista fica recolhida).
+  let started=false;
+  const fetchIfOpen=()=>{
+    if(started||!box.classList.contains("open"))return;
+    started=true;
+    void hydrateRoadDistances(selecionados);
+  };
+  new MutationObserver(fetchIfOpen).observe(box,{attributes:true,attributeFilter:["class"]});
+  fetchIfOpen();
+}
+async function hydrateRoadDistances(list){
+  const pending=list.filter(r=>!Number.isFinite(r.roadKm)&&!Number.isFinite(parseFloat((()=>{
+    try{return localStorage.getItem(cacheKey(r))}catch(e){return null}
+  })())));
+  if(!pending.length)return;
+  // Uma consulta OSRM Table devolve DISTÂNCIAS VIÁRIAS das rotas mais rápidas,
+  // e não distâncias em linha reta. Lotes reduzem as chamadas à API pública.
+  for(let from=0;from<pending.length;from+=12){
+    const chunk=pending.slice(from,from+12).filter(r=>r.sede);
+    if(!chunk.length)continue;
+    let failed=[];
+    try{
+      const points=[baseReferenciaCoord,...chunk.map(r=>r.sede)];
+      const coordinates=points.map(p=>p.lng+","+p.lat).join(";");
+      const destinations=chunk.map((r,i)=>String(i+1)).join(";");
+      const url="https://router.project-osrm.org/table/v1/driving/"+coordinates+"?sources=0&destinations="+destinations+"&annotations=distance";
+      const response=await fetch(url);
+      if(!response.ok)throw new Error("HTTP "+response.status);
+      const result=await response.json();
+      const distances=result.distances?.[0];
+      if(result.code!=="Ok"||!Array.isArray(distances)||distances.length!==chunk.length)throw new Error("Sem matriz viária");
+      for(let i=0;i<chunk.length;i++){
+        const rec=chunk[i];
+        const meters=distances[i];
+        if(Number.isFinite(meters)&&meters>=0){
+          rec.roadKm=meters/1000;rec.roadSource="OpenStreetMap/OSRM";
+          try{localStorage.setItem(cacheKey(rec),String(rec.roadKm))}catch(e){}
+          updateRoadDistanceLabel(rec);
+        }else failed.push(rec);
+      }
+    }catch(e){failed=chunk}
+    for(const rec of failed){
+      await getRoadKm(rec); // fallback viário, nunca usa haversine.
+      updateRoadDistanceLabel(rec);
+      await new Promise(done=>setTimeout(done,1100));
+    }
+    if(from+12<pending.length)await new Promise(done=>setTimeout(done,1100));
+  }
+}
 document.getElementById("search").addEventListener("change",e=>{const q=norm(e.target.value);if(!q)return;const rec=records.find(r=>norm(r.nome).includes(q));if(rec){const layer=featureLayers[norm(rec.nome)];if(layer){map.fitBounds(layer.getBounds(),{padding:[30,30],maxZoom:9});layer.openPopup()}}});
 function toggle(id,layer){const b=document.getElementById(id);b.onclick=()=>{if(map.hasLayer(layer)){map.removeLayer(layer);b.classList.add("off")}else{map.addLayer(layer);b.classList.remove("off")}}}
 toggle("toggleWest",westLayer);toggle("toggleContext",contextLayer);toggle("toggleBases",baseLayer);toggle("toggleGuarnicoes",guarnicaoLayer);toggle("toggleCensipam",censipamLayer);
