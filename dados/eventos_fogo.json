@@ -1,5 +1,5 @@
 {
-  "atualizado_em": "2026-11-16T07:40:56.943136Z",
+  "atualizado_em": "2026-11-16T17:25:38.658991Z",
   "eventos": [
     {
       "id_evento": 7147331,
@@ -4495,7 +4495,7 @@
     },
     {
       "id_evento": 7197272,
-      "status_evento": "Ativo",
+      "status_evento": "Em observação",
       "dt_minima": "2026-11-12T15:39:00Z",
       "dt_maxima": "2026-11-15T17:09:00Z",
       "dt_ultima_visao": "2026-11-15T17:09:00Z",
@@ -14669,7 +14669,7 @@
     },
     {
       "id_evento": 7204265,
-      "status_evento": "Ativo",
+      "status_evento": "Em observação",
       "dt_minima": "2026-11-14T15:45:00Z",
       "dt_maxima": "2026-11-15T17:09:00Z",
       "dt_ultima_visao": "2026-11-15T17:09:00Z",
@@ -20663,7 +20663,7 @@
     },
     {
       "id_evento": 7207400,
-      "status_evento": "Ativo",
+      "status_evento": "Em observação",
       "dt_minima": "2026-11-15T15:26:00Z",
       "dt_maxima": "2026-11-15T16:24:00Z",
       "dt_ultima_visao": "2026-11-15T16:24:00Z",
@@ -20963,7 +20963,7 @@
     },
     {
       "id_evento": 7207625,
-      "status_evento": "Ativo",
+      "status_evento": "Em observação",
       "dt_minima": "2026-11-15T16:24:00Z",
       "dt_maxima": "2026-11-15T16:24:00Z",
       "dt_ultima_visao": "2026-11-15T16:24:00Z",
