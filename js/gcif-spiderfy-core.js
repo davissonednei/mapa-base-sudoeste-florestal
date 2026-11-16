@@ -425,7 +425,7 @@
     const recursos=recursosGcif(id);
     const recursoHtml=recursos.length?`<div class="quick-resource">${recursos.map(m=>`${m.equipamento} — ${m.posto} ${m.nome}`).join("<br>")}</div>`:"";
     const local=[g.municipio,g.local].filter(Boolean).join(" • ")||"Local não informado";
-    const evento=g.ocorrencia_natureza?`<div class="quick-resource">🌊 Ocorrência: ${g.ocorrencia_natureza} • chegada não informada</div><div class="quick-line"><span>Efetivo deslocado:</span> <b>${equipe.map(m=>m.posto+" "+m.nome).join(" • ")}</b></div>`:"";
+    const evento=g.ocorrencia_natureza?`<div class="quick-resource">🌊 Ocorrência: ${g.ocorrencia_natureza} • ${norm(g.status).includes("combate")?"equipe no local, em combate":"em deslocamento"}</div><div class="quick-line"><span>Efetivo empenhado:</span> <b>${equipe.map(m=>m.posto+" "+m.nome).join(" • ")}</b></div>`:"";
     const destino=Number.isFinite(g.destino_lat)&&Number.isFinite(g.destino_lng)?'<div class="quick-resource">🎯 Destino: '+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+' • em deslocamento (posição atual não informada)</div>':"";
     card.innerHTML=`
       <div class="quick-head"><div class="quick-title">GCIF ${id}</div><span class="quick-status ${quickStatusClasse(g.status)}">${g.status||"—"}</span><button class="quick-close" title="Fechar">×</button></div>
