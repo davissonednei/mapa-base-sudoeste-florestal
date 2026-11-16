@@ -36,6 +36,7 @@
     .gcif-nav-name{font-size:12px;font-weight:800}.gcif-nav-meta{font-size:9px;color:#9dafbe;margin-top:3px}
     .gcif-nav-status{align-self:center;font-size:8px;font-weight:900;border-radius:999px;padding:5px 7px;white-space:nowrap}
     .gcif-nav-status.status-prontidao{border:1px solid rgba(34,197,94,.45);background:rgba(34,197,94,.12);color:#9cebb8}
+    .gcif-nav-status.status-deslocamento{border:1px solid rgba(245,158,11,.48);background:rgba(245,158,11,.12);color:#ffd18a}
     .gcif-nav-status.status-prevencao{border:1px solid rgba(245,158,11,.45);background:rgba(245,158,11,.12);color:#ffd18a}
     .gcif-nav-status.status-combate{border:1px solid rgba(239,68,68,.45);background:rgba(239,68,68,.12);color:#ff9c9c}
     .gcif-nav-status.status-neutro{border:1px solid rgba(148,163,184,.4);background:rgba(148,163,184,.1);color:#cbd5e1}
@@ -424,7 +425,7 @@
     const recursos=recursosGcif(id);
     const recursoHtml=recursos.length?`<div class="quick-resource">${recursos.map(m=>`${m.equipamento} — ${m.posto} ${m.nome}`).join("<br>")}</div>`:"";
     const local=[g.municipio,g.local].filter(Boolean).join(" • ")||"Local não informado";
-    const evento=g.ocorrencia_natureza?`<div class="quick-resource">🌊 Ocorrência: ${g.ocorrencia_natureza} • chegada não informada</div>`:"";
+    const evento=g.ocorrencia_natureza?`<div class="quick-resource">🌊 Ocorrência: ${g.ocorrencia_natureza} • chegada não informada</div><div class="quick-line"><span>Efetivo deslocado:</span> <b>${equipe.map(m=>m.posto+" "+m.nome).join(" • ")}</b></div>`:"";
     const destino=Number.isFinite(g.destino_lat)&&Number.isFinite(g.destino_lng)?'<div class="quick-resource">🎯 Destino: '+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+' • em deslocamento (posição atual não informada)</div>':"";
     card.innerHTML=`
       <div class="quick-head"><div class="quick-title">GCIF ${id}</div><span class="quick-status ${quickStatusClasse(g.status)}">${g.status||"—"}</span><button class="quick-close" title="Fechar">×</button></div>
@@ -628,7 +629,7 @@
         icon:L.divIcon({className:"gcif-dest-icon",html:'<div class="gcif-dest-pin">🎯</div>',iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-17]})
       }).addTo(guarnicaoLayer);
       marker.bindTooltip("🌊 Destino GCIF "+id+" • "+(g.ocorrencia_natureza||"Ocorrência")+" • Em deslocamento",{direction:"top",offset:[0,-16]});
-      marker.bindPopup('<div class="popup-title">🌊 '+(g.ocorrencia_natureza||"Ocorrência")+' • Destino GCIF '+id+'</div><div class="popup-row"><span>Status</span><b>Em deslocamento</b></div><div class="popup-row"><span>Coordenadas do destino</span><b>'+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+'</b></div><div class="popup-foot">Este marcador indica o DESTINO, não a localização atual da GCIF. Posição durante o trajeto não informada.</div>');
+      marker.bindPopup(()=>'<div class="popup-title">🌊 '+(g.ocorrencia_natureza||"Ocorrência")+' • Destino GCIF '+id+'</div><div class="popup-row"><span>Status</span><b>Em deslocamento</b></div><div class="popup-row"><span>Viatura</span><b>🚒 '+(VIATURAS?.porGcif?.[id]||"—")+'</b></div><div class="popup-row"><span>Coordenadas do destino</span><b>'+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+'</b></div><div class="gcif-group-title">Efetivo deslocado</div>'+efetivoOrdenado(id).map(memberHtml).join("")+'<div class="popup-foot">Este marcador indica o DESTINO, não a localização atual da GCIF. Posição durante o trajeto não informada.</div>',{maxWidth:400});
       gcifDestinationRefs.set(id,marker);
       latlngs.push(pos);
     }
