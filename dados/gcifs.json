@@ -24,11 +24,11 @@
     "destino_descricao": "Região da ocorrência de alagamento"
   },
   "03": {
-    "municipio": "Barra do Choça",
-    "local": "Ponto de prevenção — localização informada pela operação",
-    "status": "Em prevenção",
-    "lat": -14.867998,
-    "lng": -40.575855,
+    "municipio": "Vitória da Conquista",
+    "local": "Base Florestal Sudoeste — 7º BBM",
+    "status": "Em prontidão",
+    "lat": -14.866124758187732,
+    "lng": -40.863157433033564,
     "base_lat": -14.866124758187732,
     "base_lng": -40.863157433033564,
     "base_local": "Base Florestal Sudoeste — Vitória da Conquista"
