@@ -20,17 +20,14 @@
     "base_local": "3ª Companhia do 7º BBM — Guanambi"
   },
   "03": {
-    "municipio": "Vitória da Conquista",
-    "local": "Base Florestal Sudoeste — 7º BBM",
-    "status": "Em deslocamento",
-    "lat": -14.866124758187732,
-    "lng": -40.863157433033564,
+    "municipio": "Barra do Choça",
+    "local": "Ponto de prevenção — localização informada pela operação",
+    "status": "Em prevenção",
+    "lat": -14.867998,
+    "lng": -40.575855,
     "base_lat": -14.866124758187732,
     "base_lng": -40.863157433033564,
-    "base_local": "Base Florestal Sudoeste — Vitória da Conquista",
-    "destino_lat": -14.867998,
-    "destino_lng": -40.575855,
-    "destino_descricao": "Destino informado (coordenadas)"
+    "base_local": "Base Florestal Sudoeste — Vitória da Conquista"
   },
   "04": {
     "municipio": "Vitória da Conquista",
