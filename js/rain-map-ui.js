@@ -31,7 +31,7 @@ for(const group of Object.values(layers))allowed.add(group);
 // O renderer SVG também é um layer: impedir que o modo Florestal o remova.
 allowed.add(municipalRenderer);
 function allow(layer){allowed.add(layer);if(layer.eachLayer)layer.eachLayer(child=>allowed.add(child));return layer}
-const state={mode:"fogo",clouds:false,inmet:false,metric:periods[0][0],rows:new Map(),alerts:[],alertOK:false,forecastOK:false,forecastUpdated:null,alertUpdated:null,stale:false,loaded:false,selected:null,detailType:"chuva",loading:false,lastFetch:0,activeRainCount:0,currentFetchedAt:null};
+const state={mode:"fogo",clouds:false,inmet:false,metric:periods[0][0],rows:new Map(),alerts:[],alertOK:false,alertStale:false,forecastOK:false,forecastUpdated:null,alertUpdated:null,stale:false,loaded:false,selected:null,detailType:"chuva",loading:false,lastFetch:0,activeRainCount:0,currentFetchedAt:null};
 const btnCloud=el("toggleRainClouds"),btnINMET=el("toggleRainINMET"),details=el("rainDetail");
 const rainColors=["#c8ebf9","#84c5e5","#3c90c7","#225eac","#663fa8","#a631a2"];
 function color(x){let n=finite(x);return n===null?"#64748b":n<1?rainColors[0]:n<10?rainColors[1]:n<25?rainColors[2]:n<50?rainColors[3]:n<100?rainColors[4]:rainColors[5]}
@@ -123,9 +123,13 @@ async function fetchCurrentDirect(){
     else console.warn("Sem leitura de precipitação atual do Open-Meteo");
   }catch(e){console.warn("Fallback de chuva atual indisponível",e)}
 }
+function refreshRainMap(){
+  updateMap();
+  if(state.selected&&!details.hidden)showDetails(state.selected,state.detailType);
+}
 async function loadData(force=false){
   if(state.loading)return;
-  if(state.loaded&&!force&&Date.now()-state.lastFetch<20*60*1000){render();return}
+  if(state.loaded&&!force&&Date.now()-state.lastFetch<20*60*1000){refreshRainMap();return}
   state.loading=true;
   const [p,a]=await Promise.allSettled([
     readData("dados/chuva/previsao.json"),readData("dados/chuva/avisos.json")
@@ -145,9 +149,11 @@ async function loadData(force=false){
     state.alerts=a.value.avisos;
     state.alertOK=true;
     state.alertUpdated=a.value.atualizado_em||null;
-    if(!state.alertUpdated||Date.now()-Date.parse(state.alertUpdated)>75*60000)state.alertOK=false;
+    const last=Date.parse(String(state.alertUpdated||""));
+    state.alertStale=!Number.isFinite(last)||Date.now()-last>75*60000||Date.now()-last< -20*60000||a.value.consulta_ok===false;
   }else{
     state.alertOK=false;
+    state.alertStale=true;
     state.alerts=[];
     console.warn("Avisos INMET indisponíveis: sem inferir ausência de avisos.");
   }
@@ -158,7 +164,7 @@ async function loadData(force=false){
     return finite(row.chuva_agora_mm)!==null&&Number.isFinite(date)&&Date.now()-date<60*60000&&Date.now()-date>= -20*60000;
   });
   if(!freshCurrent)await fetchCurrentDirect();
-  state.loaded=true;state.lastFetch=Date.now();state.loading=false;render();
+  state.loaded=true;state.lastFetch=Date.now();state.loading=false;refreshRainMap();
 }
 function setBaseBoundaries(rain){
   // No modo chuva, trocar a pintura vermelha pelo recorte municipal azul independente.
@@ -196,7 +202,7 @@ function updateToolbar(){
     }
     if(state.stale)text+=" • previsão desatualizada";
     const activeCount=state.alertOK?state.alerts.filter(activeWarning).length:null;
-    text+=activeCount===null?" • INMET indisponível":" • "+activeCount+" aviso(s) INMET vigente(s)";
+    text+=activeCount===null?" • INMET sem dados":state.alertStale?" • INMET: "+activeCount+" aviso(s) na última consulta — ATUALIZAÇÃO ATRASADA":" • "+activeCount+" aviso(s) INMET vigente(s)";
     info.textContent=text;
   }
 }
@@ -213,7 +219,7 @@ function createInmet(rec,alerts){
   const extreme=alerts.some(a=>/grande perigo/i.test(a.severidade||""));
   const icon=L.divIcon({className:"rain-alert-icon",html:'<div class="rain-alert-bubble'+(extreme?' extreme':'')+'">⚠️'+(alerts.length>1?"<b>"+alerts.length+"</b>":"")+'</div>',iconSize:[36,34],iconAnchor:[-6,43]});
   const marker=L.marker([rec.center.lat,rec.center.lng],{icon,keyboard:true,riseOnHover:true,zIndexOffset:280,title:"Avisos INMET: "+rec.nome});
-  marker.bindTooltip(htmlSafe(rec.nome)+" · "+alerts.length+" aviso(s)",{direction:"top",offset:[14,-24]});
+  marker.bindTooltip(htmlSafe(rec.nome)+" · "+alerts.length+" aviso(s)"+(state.alertStale?" (última consulta desatualizada)":""),{direction:"top",offset:[14,-24]});
   marker.on("click",()=>showDetails(rec.nome,"inmet"));
   return allow(marker);
 }
@@ -282,6 +288,10 @@ function showDetails(name,kind="chuva"){
   const shown=state.metric==="chuva_agora_mm"?(reading?reading.amount:null):row?.[state.metric];
   let html='<div class="rain-detail-head"><strong>'+htmlSafe(name)+'</strong><button type="button" id="rainClose" class="rain-close" aria-label="Fechar informações">✕</button></div>';
   if(kind==="inmet")html+='<p class="rain-muted">Avisos meteorológicos oficiais do INMET neste município.</p>';
+  if(state.alertOK&&state.alertStale){
+    const at=state.alertUpdated?new Date(state.alertUpdated).toLocaleString("pt-BR",{timeZone:"America/Bahia",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"não informado";
+    html+='<p class="rain-muted"><strong>⚠️ INMET: última consulta desatualizada ('+htmlSafe(at)+').</strong> Os avisos podem ter mudado. <a href="https://avisos.inmet.gov.br/" rel="noopener" target="_blank">Conferir avisos oficiais</a>.</p>';
+  }
   html+='<div class="rain-periods" role="group" aria-label="Selecionar período de chuva">'+periods.map(([key,label])=>
     '<button type="button" class="rain-period'+(state.metric===key?' selected':'')+'" data-map-period="'+htmlSafe(key)+'">'+htmlSafe(label)+'</button>').join("")+'</div>';
   const label=periods.find(x=>x[0]===state.metric)?.[1]||"Chuva agora";

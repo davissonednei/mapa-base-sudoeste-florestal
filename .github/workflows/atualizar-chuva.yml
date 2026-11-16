@@ -4,6 +4,8 @@ on:
     paths:
       - 'scripts/update_rain_sudoeste.py'
       - 'dados/chuva/municipios.json'
+      - 'js/rain-map-ui.js'
+      - 'dados/gcifs.json'
       - '.github/workflows/atualizar-chuva.yml'
   schedule:
     - cron: '7,22,37,52 * * * *'

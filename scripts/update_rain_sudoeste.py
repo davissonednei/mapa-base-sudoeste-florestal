@@ -170,11 +170,25 @@ def warnings():
                 "instrucoes":descricao_limpa(alert.get("instrucoes")),"municipios":sorted(matched),
                 "url":"https://avisos.inmet.gov.br/"+ident if ident.isdigit() else "https://avisos.inmet.gov.br/"
             })
-        write("avisos.json",{"atualizado_em":STAMP,"disponivel":True,"avisos":result,"fonte":"INMET (apenas avisos vigentes no instante da consulta)"})
+        write("avisos.json",{"atualizado_em":STAMP,"ultima_tentativa":STAMP,"disponivel":True,"consulta_ok":True,"avisos":result,"fonte":"INMET (apenas avisos vigentes no instante da consulta)"})
         print("Avisos VIGENTES na área:",len(result))
     except (requests.RequestException,ValueError,TypeError) as exc:
-        write("avisos.json",{"atualizado_em":STAMP,"disponivel":False,"avisos":[],"fonte":"INMET","erro":str(exc)[:160]})
-        print("INMET indisponível; NÃO equivale a ausência de avisos",file=sys.stderr)
+        # Falha temporária da API não apaga os últimos avisos recebidos.
+        # O navegador revalida a janela temporal e destaca a idade da consulta.
+        old={}
+        try:
+            old=json.loads((ROOT/"avisos.json").read_text(encoding="utf-8"))
+        except (OSError,ValueError,TypeError):
+            pass
+        existing=old.get("avisos") if isinstance(old,dict) and old.get("disponivel") else None
+        payload={"atualizado_em":old.get("atualizado_em") if existing is not None else STAMP,
+                 "ultima_tentativa":STAMP,"consulta_ok":False,
+                 "disponivel":existing is not None,
+                 "avisos":existing if existing is not None else [],
+                 "fonte":"INMET (dados preservados da última consulta bem-sucedida)",
+                 "erro":str(exc)[:160]}
+        write("avisos.json",payload)
+        print("INMET: falha na consulta; preservados dados anteriores para exibição desatualizada: "+str(exc)[:160],file=sys.stderr)
 
 if __name__=="__main__":
     ok=forecast()

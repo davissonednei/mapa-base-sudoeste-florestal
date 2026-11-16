@@ -41,6 +41,14 @@ jobs:
           node --check js/rain-mode.js
           node --check js/rain-map-ui.js
           node --check js/gcif-spiderfy-core.js
+          python - <<'PY'
+          from pathlib import Path
+          code=Path("js/rain-map-ui.js").read_text(encoding="utf-8")
+          assert "render();" not in code, "Função render() inexistente no modo Chuva"
+          assert "function refreshRainMap()" in code
+          assert 'ATUALIZAÇÃO ATRASADA' in code
+          print("Atualização de avisos INMET e proteção contra dados desatualizados: OK.")
+          PY
           python -m py_compile scripts/update_rain_sudoeste.py
           python - <<'PY'
           import importlib.util
