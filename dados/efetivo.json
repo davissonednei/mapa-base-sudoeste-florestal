@@ -34,9 +34,15 @@
   ],
   "02": [
     {
+      "posto": "MAJ",
+      "nome": "RAMOS",
+      "funcao": "CMD",
+      "numero": null
+    },
+    {
       "posto": "SUB TEN",
       "nome": "ELSON",
-      "funcao": "CMD",
+      "funcao": "",
       "numero": null
     },
     {
@@ -44,18 +50,6 @@
       "nome": "LOURIVAL",
       "funcao": "CONDUTOR",
       "numero": 182
-    },
-    {
-      "posto": "SD",
-      "nome": "COSTA",
-      "funcao": "",
-      "numero": null
-    },
-    {
-      "posto": "SD",
-      "nome": "ADRIO",
-      "funcao": "",
-      "numero": null
     },
     {
       "posto": "SD",
@@ -154,6 +148,20 @@
       "numero": null,
       "funcao_adicional": "MOTORISTA",
       "viatura": "2016"
+    }
+  ],
+  "BASE_GUANAMBI": [
+    {
+      "posto": "SD",
+      "nome": "ADRIO",
+      "funcao": "",
+      "numero": null
+    },
+    {
+      "posto": "SD",
+      "nome": "COSTA",
+      "funcao": "",
+      "numero": null
     }
   ]
 }

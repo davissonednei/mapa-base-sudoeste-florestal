@@ -11,13 +11,17 @@
   },
   "02": {
     "municipio": "Guanambi",
-    "local": "3ª Companhia do 7º BBM — Guanambi",
-    "status": "Em prontidão",
+    "local": "3ª Companhia do 7º BBM — Guanambi (origem)",
+    "status": "Em deslocamento",
     "lat": -14.21341197903119,
     "lng": -42.77752191955733,
     "base_lat": -14.21341197903119,
     "base_lng": -42.77752191955733,
-    "base_local": "3ª Companhia do 7º BBM — Guanambi"
+    "base_local": "3ª Companhia do 7º BBM — Guanambi",
+    "ocorrencia_natureza": "Alagamento",
+    "destino_lat": -14.554063159794115,
+    "destino_lng": -43.76389810068249,
+    "destino_descricao": "Região da ocorrência de alagamento"
   },
   "03": {
     "municipio": "Barra do Choça",

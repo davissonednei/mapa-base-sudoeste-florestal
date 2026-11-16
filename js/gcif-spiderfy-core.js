@@ -18,6 +18,11 @@
     .accordion-panel{display:none!important;margin-top:6px}
     .accordion-panel.open{display:flex!important}
     .gcif-nav-list{flex-direction:column;gap:5px}
+    .gcif-base-standby{width:100%;border:1px solid #326a4b;background:#0f2d23;color:white;text-align:left;border-radius:9px;padding:10px;display:grid;gap:5px;cursor:pointer}
+    .gcif-base-standby:hover{border-color:#74c995}
+    .gcif-base-standby strong{font-size:11px}.gcif-base-standby small{font-size:9px;color:#b5dbca}
+    .gcif-standby-pin{width:32px;height:32px;border:2px solid white;border-radius:50%;background:#14532d;display:grid;place-items:center;font-size:17px;box-shadow:0 2px 8px #0008}
+    .gcif-standby-icon{background:transparent!important;border:0!important}
     .gcif-dest-pin{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#f59e0b;border:3px solid #ffffff;box-shadow:0 3px 12px #0009;font-size:16px}
     .gcif-dest-icon{background:transparent!important;border:0!important}
     .staff-nav-list{flex-direction:column;gap:5px}
@@ -61,6 +66,7 @@
   const LIMITE_MAX_MS_CENSIPAM = LIMITE_MAX_HORAS_CENSIPAM * 60 * 60 * 1000;
   const gcifNavRefs = new Map();
   const gcifDestinationRefs = new Map();
+  let standbyGuanambiMarker=null;
   let spiderState = null;
   let gcifSelecionada = null;
 
@@ -133,7 +139,8 @@
     const combate=contar("combate");
     const prontidao=contar("prontidao");
     const deslocamento=ids.filter(id=>norm(GCIFS_DATA[id]?.status).includes("desloc")).length;
-    const efetivoGcifs=Object.entries(EFETIVO_GCIFS||{}).filter(([id])=>id!=="STAFF").reduce((s,[,e])=>s+(Array.isArray(e)?e.length:0),0);
+    const efetivoGcifs=ids.reduce((sum,id)=>sum+(EFETIVO_GCIFS?.[id]||[]).length,0);
+    const prontidaoBase=(EFETIVO_GCIFS?.BASE_GUANAMBI||[]).length;
     const staff=(EFETIVO_GCIFS?.STAFF||[]).length;
     const viaturas=Object.keys(VIATURAS?.frota||{}).length;
     box.innerHTML=`
@@ -143,7 +150,8 @@
       <div class="ops-stat deslocamento"><b>${deslocamento}</b><span>Desloc.</span></div>
       <div class="ops-stat"><b>${efetivoGcifs}</b><span>BM GCIF</span></div>
       <div class="ops-stat"><b>${staff}</b><span>STAFF</span></div>
-      <div class="ops-stat"><b>${viaturas}</b><span>Viaturas</span></div>`;
+      <div class="ops-stat"><b>${viaturas}</b><span>Viaturas</span></div>
+      <div class="ops-stat prontidao"><b>${prontidaoBase}</b><span>BM base</span></div>`;
   }
 
   function prepararSidebar(){
@@ -416,12 +424,13 @@
     const recursos=recursosGcif(id);
     const recursoHtml=recursos.length?`<div class="quick-resource">${recursos.map(m=>`${m.equipamento} — ${m.posto} ${m.nome}`).join("<br>")}</div>`:"";
     const local=[g.municipio,g.local].filter(Boolean).join(" • ")||"Local não informado";
+    const evento=g.ocorrencia_natureza?`<div class="quick-resource">🌊 Ocorrência: ${g.ocorrencia_natureza} • chegada não informada</div>`:"";
     const destino=Number.isFinite(g.destino_lat)&&Number.isFinite(g.destino_lng)?'<div class="quick-resource">🎯 Destino: '+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+' • em deslocamento (posição atual não informada)</div>':"";
     card.innerHTML=`
       <div class="quick-head"><div class="quick-title">GCIF ${id}</div><span class="quick-status ${quickStatusClasse(g.status)}">${g.status||"—"}</span><button class="quick-close" title="Fechar">×</button></div>
       <div class="quick-body"><div class="quick-place">📍 ${local}</div>
       <div class="quick-grid"><div class="quick-metric"><span>Efetivo</span><b>${equipe.length} BM</b></div><div class="quick-metric"><span>Viatura</span><b>🚒 ${viatura}</b></div></div>
-      <div class="quick-line"><span>Comando:</span> <b>${cmd}</b></div><div class="quick-line"><span>Condutor:</span> <b>${cond}</b></div>${recursoHtml}${destino}</div>`;
+      <div class="quick-line"><span>Comando:</span> <b>${cmd}</b></div><div class="quick-line"><span>Condutor:</span> <b>${cond}</b></div>${recursoHtml}${evento}${destino}</div>`;
     card.classList.add("show");
     card.querySelector(".quick-close").onclick=()=>{card.classList.remove("show");gcifSelecionada=null};
   }
@@ -451,6 +460,13 @@
     const resultados=[];
     for(const [id,equipe] of Object.entries(EFETIVO_GCIFS||{})){
       if(id==="STAFF") continue;
+      if(id==="BASE_GUANAMBI"){
+        for(const m of equipe||[]){
+          if(norm(`base guanambi prontidao sem viatura ${m.posto} ${m.nome}`).includes(q))
+            resultados.push({tipo:"prontidao",id:"BASE_GUANAMBI",titulo:`${m.posto} ${m.nome}`,sub:"Prontidão na base Guanambi • sem viatura"});
+        }
+        continue;
+      }
       for(const m of equipe||[]){
         const texto=norm(`${m.posto||""} ${m.nome||""} ${m.funcao||""} ${m.numero??""} ${m.equipamento||""}`);
         if(texto.includes(q)) resultados.push({tipo:"militar",id,titulo:`${m.posto} ${m.nome}`,sub:`GCIF ${id}${m.funcao?` • ${m.funcao}`:""}${m.equipamento?` • ${m.equipamento}`:""}`});
@@ -479,6 +495,7 @@
     box.querySelectorAll(".ops-search-item").forEach(btn=>btn.onclick=()=>{
       const id=btn.dataset.gcif;
       box.classList.remove("show");
+      if(id==="BASE_GUANAMBI"){irParaProntidaoGuanambi();return;}
       if(id==="STAFF"){
         const lista=document.getElementById("staffNavList");
         const titulo=lista?.previousElementSibling;
@@ -524,6 +541,12 @@
     }
   }
 
+  function irParaProntidaoGuanambi(){
+    const g=GCIFS_DATA?.["02"];
+    if(!Number.isFinite(g?.base_lat)||!Number.isFinite(g?.base_lng))return;
+    map.setView([g.base_lat,g.base_lng],Math.max(map.getZoom(),11),{animate:true});
+    if(standbyGuanambiMarker)setTimeout(()=>standbyGuanambiMarker.openPopup(),250);
+  }
   function renderListaGcifs(){
     const box=document.getElementById("gcifNavList");
     if(!box) return;
@@ -539,6 +562,19 @@
       btn.innerHTML=`<div><div class="gcif-nav-name">GCIF ${id}</div><div class="gcif-nav-meta">${detalhe}</div></div><span class="gcif-nav-status ${statusClasse(g.status)}">${g.status||"—"}</span>`;
       btn.onclick=()=>irParaGcif(id);
       box.appendChild(btn);
+      if(id==="02"&&(EFETIVO_GCIFS?.BASE_GUANAMBI||[]).length){
+        const equipe=EFETIVO_GCIFS.BASE_GUANAMBI,standby=document.createElement("button");
+        standby.className="gcif-base-standby";
+        const title=document.createElement("strong");
+        title.textContent="🏠 Prontidão • Base Guanambi";
+        const nomes=document.createElement("small");
+        nomes.textContent=equipe.map(m=>m.posto+" "+m.nome).join(" • ");
+        const situacao=document.createElement("small");
+        situacao.textContent="✅ Em prontidão • SEM viatura • "+equipe.length+" BM";
+        standby.append(title,nomes,situacao);
+        standby.onclick=irParaProntidaoGuanambi;
+        box.appendChild(standby);
+      }
     });
   }
 
@@ -548,7 +584,11 @@
     guarnicaoLayer.clearLayers();
     gcifNavRefs.clear();
     gcifDestinationRefs.clear();
-    const grupos = agruparGcifs(), latlngs = [];
+    standbyGuanambiMarker=null;
+    // Não apresentar a GCIF deslocada como estando fisicamente na base.
+    const grupos = agruparGcifs().filter(g=>!(g.ids.length===1&&
+      norm(GCIFS_DATA[g.ids[0]]?.status).includes("desloc")&&
+      Number.isFinite(GCIFS_DATA[g.ids[0]]?.destino_lat))), latlngs = [];
 
     for(const grupo of grupos){
       let marker;
@@ -587,10 +627,23 @@
         keyboard:false,zIndexOffset:1100,
         icon:L.divIcon({className:"gcif-dest-icon",html:'<div class="gcif-dest-pin">🎯</div>',iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-17]})
       }).addTo(guarnicaoLayer);
-      marker.bindTooltip("Destino GCIF "+id+" • Em deslocamento",{direction:"top",offset:[0,-16]});
-      marker.bindPopup('<div class="popup-title">🎯 Destino GCIF '+id+'</div><div class="popup-row"><span>Status</span><b>Em deslocamento</b></div><div class="popup-row"><span>Coordenadas do destino</span><b>'+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+'</b></div><div class="popup-foot">Este marcador indica o DESTINO, não a localização atual da GCIF. Posição durante o trajeto não informada.</div>');
+      marker.bindTooltip("🌊 Destino GCIF "+id+" • "+(g.ocorrencia_natureza||"Ocorrência")+" • Em deslocamento",{direction:"top",offset:[0,-16]});
+      marker.bindPopup('<div class="popup-title">🌊 '+(g.ocorrencia_natureza||"Ocorrência")+' • Destino GCIF '+id+'</div><div class="popup-row"><span>Status</span><b>Em deslocamento</b></div><div class="popup-row"><span>Coordenadas do destino</span><b>'+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+'</b></div><div class="popup-foot">Este marcador indica o DESTINO, não a localização atual da GCIF. Posição durante o trajeto não informada.</div>');
       gcifDestinationRefs.set(id,marker);
       latlngs.push(pos);
+    }
+    // SD ADRIO e SD COSTA mantidos na base, sem a AR 1818.
+    const reserva=EFETIVO_GCIFS?.BASE_GUANAMBI||[],origem=GCIFS_DATA?.["02"];
+    if(reserva.length&&Number.isFinite(origem?.base_lat)&&Number.isFinite(origem?.base_lng)){
+      const point=[origem.base_lat,origem.base_lng];
+      standbyGuanambiMarker=L.marker(point,{keyboard:false,zIndexOffset:1050,
+        icon:L.divIcon({className:"gcif-standby-icon",html:'<div class="gcif-standby-pin">🏠</div>',iconSize:[32,32],iconAnchor:[16,16],popupAnchor:[0,-18]})
+      }).addTo(guarnicaoLayer);
+      standbyGuanambiMarker.bindTooltip("Prontidão Guanambi • 2 BM • sem viatura",{direction:"top",offset:[0,-17]});
+      standbyGuanambiMarker.bindPopup(()=>'<div class="popup-title">🏠 Base Guanambi — Prontidão</div><div class="popup-row"><span>Status</span><b>Em prontidão, sem viatura</b></div>'+
+        reserva.map(m=>'<div class="member-row"><span class="member-name">'+m.posto+' '+m.nome+'</span></div>').join("")+
+        '<div class="popup-foot">A AR 1818 acompanha a GCIF 02 na ocorrência de alagamento.</div>',{maxWidth:380});
+      latlngs.push(point);
     }
     gcifBounds = latlngs.length ? L.latLngBounds(latlngs) : null;
     document.getElementById("gcifCount").textContent = Object.keys(GCIFS_DATA).length;
