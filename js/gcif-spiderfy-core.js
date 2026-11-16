@@ -18,6 +18,8 @@
     .accordion-panel{display:none!important;margin-top:6px}
     .accordion-panel.open{display:flex!important}
     .gcif-nav-list{flex-direction:column;gap:5px}
+    .gcif-dest-pin{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#f59e0b;border:3px solid #ffffff;box-shadow:0 3px 12px #0009;font-size:16px}
+    .gcif-dest-icon{background:transparent!important;border:0!important}
     .staff-nav-list{flex-direction:column;gap:5px}
     .staff-nav-person{border:1px solid #284154;background:#0c1e2c;border-radius:9px;padding:10px}
     .staff-nav-person strong{display:block;font-size:11px;color:#f2f8ff;font-weight:850}
@@ -58,6 +60,7 @@
   const LIMITE_MIN_MS_CENSIPAM = LIMITE_MIN_HORAS_CENSIPAM * 60 * 60 * 1000;
   const LIMITE_MAX_MS_CENSIPAM = LIMITE_MAX_HORAS_CENSIPAM * 60 * 60 * 1000;
   const gcifNavRefs = new Map();
+  const gcifDestinationRefs = new Map();
   let spiderState = null;
   let gcifSelecionada = null;
 
@@ -413,11 +416,12 @@
     const recursos=recursosGcif(id);
     const recursoHtml=recursos.length?`<div class="quick-resource">${recursos.map(m=>`${m.equipamento} — ${m.posto} ${m.nome}`).join("<br>")}</div>`:"";
     const local=[g.municipio,g.local].filter(Boolean).join(" • ")||"Local não informado";
+    const destino=Number.isFinite(g.destino_lat)&&Number.isFinite(g.destino_lng)?'<div class="quick-resource">🎯 Destino: '+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+' • em deslocamento (posição atual não informada)</div>':"";
     card.innerHTML=`
       <div class="quick-head"><div class="quick-title">GCIF ${id}</div><span class="quick-status ${quickStatusClasse(g.status)}">${g.status||"—"}</span><button class="quick-close" title="Fechar">×</button></div>
       <div class="quick-body"><div class="quick-place">📍 ${local}</div>
       <div class="quick-grid"><div class="quick-metric"><span>Efetivo</span><b>${equipe.length} BM</b></div><div class="quick-metric"><span>Viatura</span><b>🚒 ${viatura}</b></div></div>
-      <div class="quick-line"><span>Comando:</span> <b>${cmd}</b></div><div class="quick-line"><span>Condutor:</span> <b>${cond}</b></div>${recursoHtml}</div>`;
+      <div class="quick-line"><span>Comando:</span> <b>${cmd}</b></div><div class="quick-line"><span>Condutor:</span> <b>${cond}</b></div>${recursoHtml}${destino}</div>`;
     card.classList.add("show");
     card.querySelector(".quick-close").onclick=()=>{card.classList.remove("show");gcifSelecionada=null};
   }
@@ -425,6 +429,12 @@
   function irParaGcif(id){
     const ref=gcifNavRefs.get(id);
     renderFichaRapida(id);
+    const destination=gcifDestinationRefs.get(id);
+    if(destination){
+      map.setView(destination.getLatLng(),Math.max(map.getZoom(),12),{animate:true});
+      setTimeout(()=>destination.openPopup(),250);
+      return;
+    }
     if(!ref) return; // Sem posição confirmada, a ficha segue acessível sem mover o mapa.
     const alvo=[ref.grupo.lat,ref.grupo.lng];
     const zoom=Math.max(map.getZoom(),13);
@@ -524,7 +534,8 @@
       btn.className="gcif-nav";
       const viatura=VIATURAS.porGcif?.[id];
       const recurso=temDrone(id)?" • 🚁 Drone":"";
-      const detalhe=[g.municipio,viatura?`🚒 ${viatura}`:null,`${(EFETIVO_GCIFS?.[id]||[]).length} BM`].filter(Boolean).join(" • ")+recurso;
+      const destino=Number.isFinite(g.destino_lat)&&Number.isFinite(g.destino_lng)?" • 🎯 Destino: "+g.destino_lat.toFixed(6)+", "+g.destino_lng.toFixed(6):"";
+      const detalhe=[g.municipio,viatura?`🚒 ${viatura}`:null,`${(EFETIVO_GCIFS?.[id]||[]).length} BM`].filter(Boolean).join(" • ")+recurso+destino;
       btn.innerHTML=`<div><div class="gcif-nav-name">GCIF ${id}</div><div class="gcif-nav-meta">${detalhe}</div></div><span class="gcif-nav-status ${statusClasse(g.status)}">${g.status||"—"}</span>`;
       btn.onclick=()=>irParaGcif(id);
       box.appendChild(btn);
@@ -536,6 +547,7 @@
     collapseSpider();
     guarnicaoLayer.clearLayers();
     gcifNavRefs.clear();
+    gcifDestinationRefs.clear();
     const grupos = agruparGcifs(), latlngs = [];
 
     for(const grupo of grupos){
@@ -567,6 +579,19 @@
       latlngs.push([grupo.lat,grupo.lng]);
     }
 
+    // Mostrar o destino como ponto próprio, sem apresentá-lo como posição atual da guarnição.
+    for(const [id,g] of Object.entries(GCIFS_DATA||{})){
+      if(!norm(g.status).includes("desloc")||!Number.isFinite(g.destino_lat)||!Number.isFinite(g.destino_lng))continue;
+      const pos=[g.destino_lat,g.destino_lng];
+      const marker=L.marker(pos,{
+        keyboard:false,zIndexOffset:1100,
+        icon:L.divIcon({className:"gcif-dest-icon",html:'<div class="gcif-dest-pin">🎯</div>',iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-17]})
+      }).addTo(guarnicaoLayer);
+      marker.bindTooltip("Destino GCIF "+id+" • Em deslocamento",{direction:"top",offset:[0,-16]});
+      marker.bindPopup('<div class="popup-title">🎯 Destino GCIF '+id+'</div><div class="popup-row"><span>Status</span><b>Em deslocamento</b></div><div class="popup-row"><span>Coordenadas do destino</span><b>'+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+'</b></div><div class="popup-foot">Este marcador indica o DESTINO, não a localização atual da GCIF. Posição durante o trajeto não informada.</div>');
+      gcifDestinationRefs.set(id,marker);
+      latlngs.push(pos);
+    }
     gcifBounds = latlngs.length ? L.latLngBounds(latlngs) : null;
     document.getElementById("gcifCount").textContent = Object.keys(GCIFS_DATA).length;
     document.getElementById("pointCount").textContent = grupos.length;
