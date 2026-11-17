@@ -426,12 +426,13 @@
     const recursoHtml=recursos.length?`<div class="quick-resource">${recursos.map(m=>`${m.equipamento} — ${m.posto} ${m.nome}`).join("<br>")}</div>`:"";
     const local=[g.municipio,g.local].filter(Boolean).join(" • ")||"Local não informado";
     const evento=g.ocorrencia_natureza?`<div class="quick-resource">🌊 Ocorrência: ${g.ocorrencia_natureza} • ${norm(g.status).includes("combate")?"equipe no local, em combate":"em deslocamento"}</div><div class="quick-line"><span>Efetivo empenhado:</span> <b>${equipe.map(m=>m.posto+" "+m.nome).join(" • ")}</b></div>`:"";
-    const destino=Number.isFinite(g.destino_lat)&&Number.isFinite(g.destino_lng)?'<div class="quick-resource">🎯 Destino: '+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+' • em deslocamento (posição atual não informada)</div>':"";
+    const destino=Number.isFinite(g.destino_lat)&&Number.isFinite(g.destino_lng)?'<div class="quick-resource">🎯 '+(g.destino_descricao||"Destino")+": "+g.destino_lat.toFixed(6)+", "+g.destino_lng.toFixed(6)+' • em deslocamento (posição atual não informada)</div>':"";
+    const missao=g.missao?`<div class="quick-resource">🚁 Missão: ${g.missao} • ${g.entrega_status||"Entrega não confirmada"}</div>`:"";
     card.innerHTML=`
       <div class="quick-head"><div class="quick-title">GCIF ${id}</div><span class="quick-status ${quickStatusClasse(g.status)}">${g.status||"—"}</span><button class="quick-close" title="Fechar">×</button></div>
       <div class="quick-body"><div class="quick-place">📍 ${local}</div>
       <div class="quick-grid"><div class="quick-metric"><span>Efetivo</span><b>${equipe.length} BM</b></div><div class="quick-metric"><span>Viatura</span><b>🚒 ${viatura}</b></div></div>
-      <div class="quick-line"><span>Comando:</span> <b>${cmd}</b></div><div class="quick-line"><span>Condutor:</span> <b>${cond}</b></div>${recursoHtml}${evento}${destino}</div>`;
+      <div class="quick-line"><span>Comando:</span> <b>${cmd}</b></div><div class="quick-line"><span>Condutor:</span> <b>${cond}</b></div>${recursoHtml}${evento}${missao}${destino}</div>`;
     card.classList.add("show");
     card.querySelector(".quick-close").onclick=()=>{card.classList.remove("show");gcifSelecionada=null};
   }
@@ -559,7 +560,8 @@
       const viatura=VIATURAS.porGcif?.[id];
       const recurso=temDrone(id)?" • 🚁 Drone":"";
       const destino=Number.isFinite(g.destino_lat)&&Number.isFinite(g.destino_lng)?" • 🎯 Destino: "+g.destino_lat.toFixed(6)+", "+g.destino_lng.toFixed(6):"";
-      const detalhe=[g.municipio,viatura?`🚒 ${viatura}`:null,`${(EFETIVO_GCIFS?.[id]||[]).length} BM`].filter(Boolean).join(" • ")+recurso+destino;
+      const missao=g.apoio_gcif?` • 🚁 Encontro com GCIF ${g.apoio_gcif} (entrega pendente)`:"";
+      const detalhe=[g.municipio,viatura?`🚒 ${viatura}`:null,`${(EFETIVO_GCIFS?.[id]||[]).length} BM`].filter(Boolean).join(" • ")+recurso+missao+destino;
       btn.innerHTML=`<div><div class="gcif-nav-name">GCIF ${id}</div><div class="gcif-nav-meta">${detalhe}</div></div><span class="gcif-nav-status ${statusClasse(g.status)}">${g.status||"—"}</span>`;
       btn.onclick=()=>irParaGcif(id);
       box.appendChild(btn);
@@ -624,12 +626,20 @@
     for(const [id,g] of Object.entries(GCIFS_DATA||{})){
       if(!norm(g.status).includes("desloc")||!Number.isFinite(g.destino_lat)||!Number.isFinite(g.destino_lng))continue;
       const pos=[g.destino_lat,g.destino_lng];
+      const mesmoPontoDeOutraGCIF=Object.entries(GCIFS_DATA||{}).some(([otherId,other])=>otherId!==id&&
+        Number.isFinite(other?.lat)&&Number.isFinite(other?.lng)&&
+        Math.abs(other.lat-g.destino_lat)<0.00001&&Math.abs(other.lng-g.destino_lng)<0.00001);
+      const pontoDeEncontro=g.apoio_gcif?"🤝":"🎯";
       const marker=L.marker(pos,{
         keyboard:false,zIndexOffset:1100,
-        icon:L.divIcon({className:"gcif-dest-icon",html:'<div class="gcif-dest-pin">🎯</div>',iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-17]})
+        // Deslocar apenas o DESENHO do destino, para não cobrir o marcador da GCIF 02.
+        icon:L.divIcon({className:"gcif-dest-icon",html:'<div class="gcif-dest-pin">'+pontoDeEncontro+'</div>',
+          iconSize:[30,30],iconAnchor:mesmoPontoDeOutraGCIF?[-21,15]:[15,15],popupAnchor:[0,-17]})
       }).addTo(guarnicaoLayer);
-      marker.bindTooltip("🌊 Destino GCIF "+id+" • "+(g.ocorrencia_natureza||"Ocorrência")+" • Em deslocamento",{direction:"top",offset:[0,-16]});
-      marker.bindPopup(()=>'<div class="popup-title">🌊 '+(g.ocorrencia_natureza||"Ocorrência")+' • Destino GCIF '+id+'</div><div class="popup-row"><span>Status</span><b>Em deslocamento</b></div><div class="popup-row"><span>Viatura</span><b>🚒 '+(VIATURAS?.porGcif?.[id]||"—")+'</b></div><div class="popup-row"><span>Coordenadas do destino</span><b>'+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+'</b></div><div class="gcif-group-title">Efetivo deslocado</div>'+efetivoOrdenado(id).map(memberHtml).join("")+'<div class="popup-foot">Este marcador indica o DESTINO, não a localização atual da GCIF. Posição durante o trajeto não informada.</div>',{maxWidth:400});
+      marker.bindTooltip((g.apoio_gcif?"🤝 Encontro com GCIF "+g.apoio_gcif:"🌊 Destino GCIF "+id)+" • Em deslocamento",{direction:"top",offset:[0,-16]});
+      marker.bindPopup(()=>'<div class="popup-title">'+(g.apoio_gcif?"🤝 Encontro GCIF "+id+" → GCIF "+g.apoio_gcif:"🌊 "+(g.ocorrencia_natureza||"Ocorrência")+" • Destino GCIF "+id)+'</div><div class="popup-row"><span>Status</span><b>Em deslocamento</b></div><div class="popup-row"><span>Viatura</span><b>🚒 '+(VIATURAS?.porGcif?.[id]||"—")+'</b></div>'+
+        (g.missao?'<div class="popup-row"><span>Missão</span><b>'+g.missao+'</b></div><div class="popup-foot">Entrega do SD William e drone ainda não confirmada.</div>':"")+
+        '<div class="popup-row"><span>Coordenadas do destino</span><b>'+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+'</b></div><div class="gcif-group-title">Efetivo em deslocamento</div>'+efetivoOrdenado(id).map(memberHtml).join("")+'<div class="popup-foot">Marcador de destino, não localização atual da guarnição; posição durante o trajeto não informada.</div>',{maxWidth:400});
       gcifDestinationRefs.set(id,marker);
       latlngs.push(pos);
     }
