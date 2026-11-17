@@ -23,6 +23,11 @@
     .gcif-base-standby strong{font-size:11px}.gcif-base-standby small{font-size:9px;color:#b5dbca}
     .gcif-standby-pin{width:32px;height:32px;border:2px solid white;border-radius:50%;background:#14532d;display:grid;place-items:center;font-size:17px;box-shadow:0 2px 8px #0008}
     .gcif-standby-icon{background:transparent!important;border:0!important}
+    .gcif-apoio-card{width:100%;border:1px solid rgba(96,165,250,.4);border-radius:9px;background:rgba(96,165,250,.10);padding:10px;color:#edf5ff;text-align:left;cursor:pointer;display:grid;gap:5px}
+    .gcif-apoio-card strong{font-size:11px}.gcif-apoio-card small{color:#b3cee4;font-size:9px}
+    .gcif-apoio-card:hover{border-color:#93c5fd}
+    .gcif-apoio-icon{background:transparent!important;border:0!important}
+    .gcif-apoio-pin{height:34px;width:34px;display:grid;place-items:center;border-radius:50%;border:2px solid #fff;background:#2563eb;box-shadow:0 2px 10px #0009;font-size:18px}
     .gcif-dest-pin{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#f59e0b;border:3px solid #ffffff;box-shadow:0 3px 12px #0009;font-size:16px}
     .gcif-dest-icon{background:transparent!important;border:0!important}
     .staff-nav-list{flex-direction:column;gap:5px}
@@ -68,6 +73,7 @@
   const gcifNavRefs = new Map();
   const gcifDestinationRefs = new Map();
   let standbyGuanambiMarker=null;
+  let apoioRizettoMarker=null;
   let spiderState = null;
   let gcifSelecionada = null;
 
@@ -142,6 +148,7 @@
     const deslocamento=ids.filter(id=>norm(GCIFS_DATA[id]?.status).includes("desloc")).length;
     const efetivoGcifs=ids.reduce((sum,id)=>sum+(EFETIVO_GCIFS?.[id]||[]).length,0);
     const prontidaoBase=(EFETIVO_GCIFS?.BASE_GUANAMBI||[]).length;
+    const apoio=(EFETIVO_GCIFS?.APOIO_RIZETTO||[]).length;
     const staff=(EFETIVO_GCIFS?.STAFF||[]).length;
     const viaturas=Object.keys(VIATURAS?.frota||{}).length;
     box.innerHTML=`
@@ -152,7 +159,8 @@
       <div class="ops-stat"><b>${efetivoGcifs}</b><span>BM GCIF</span></div>
       <div class="ops-stat"><b>${staff}</b><span>STAFF</span></div>
       <div class="ops-stat"><b>${viaturas}</b><span>Viaturas</span></div>
-      <div class="ops-stat prontidao"><b>${prontidaoBase}</b><span>BM base</span></div>`;
+      <div class="ops-stat prontidao"><b>${prontidaoBase}</b><span>BM base</span></div>
+      <div class="ops-stat"><b>${apoio}</b><span>Apoio</span></div>`;
   }
 
   function prepararSidebar(){
@@ -462,6 +470,13 @@
     const resultados=[];
     for(const [id,equipe] of Object.entries(EFETIVO_GCIFS||{})){
       if(id==="STAFF") continue;
+      if(id==="APOIO_RIZETTO"){
+        for(const m of equipe||[]){
+          const texto=norm(`apoio rizetto drone william ${m.posto} ${m.nome}`);
+          if(texto.includes(q))resultados.push({tipo:"apoio",id:"APOIO_RIZETTO",titulo:`${m.posto} ${m.nome}`,sub:"Apoio operacional • CAP Rizetto e SD William • drone"});
+        }
+        continue;
+      }
       if(id==="BASE_GUANAMBI"){
         for(const m of equipe||[]){
           if(norm(`base guanambi prontidao sem viatura ${m.posto} ${m.nome}`).includes(q))
@@ -497,6 +512,7 @@
     box.querySelectorAll(".ops-search-item").forEach(btn=>btn.onclick=()=>{
       const id=btn.dataset.gcif;
       box.classList.remove("show");
+      if(id==="APOIO_RIZETTO"){irParaApoioRizetto();return;}
       if(id==="BASE_GUANAMBI"){irParaProntidaoGuanambi();return;}
       if(id==="STAFF"){
         const lista=document.getElementById("staffNavList");
@@ -549,6 +565,12 @@
     map.setView([g.base_lat,g.base_lng],Math.max(map.getZoom(),11),{animate:true});
     if(standbyGuanambiMarker)setTimeout(()=>standbyGuanambiMarker.openPopup(),250);
   }
+  function irParaApoioRizetto(){
+    const pos=apoioRizettoMarker?.getLatLng();
+    if(!pos)return;
+    map.setView(pos,Math.max(map.getZoom(),11),{animate:true});
+    setTimeout(()=>apoioRizettoMarker?.openPopup(),250);
+  }
   function renderListaGcifs(){
     const box=document.getElementById("gcifNavList");
     if(!box) return;
@@ -560,11 +582,25 @@
       const viatura=VIATURAS.porGcif?.[id];
       const recurso=temDrone(id)?" • 🚁 Drone":"";
       const destino=Number.isFinite(g.destino_lat)&&Number.isFinite(g.destino_lng)?" • 🎯 Destino: "+g.destino_lat.toFixed(6)+", "+g.destino_lng.toFixed(6):"";
-      const missao=g.missao?` • 🚁 Entrega de SD William/drone (${g.entrega_status||"pendente"})`:"";
+      const missao=g.missao?` • ${g.entrega_status==="Concluída"?"✅ Entrega concluída • retornando à base":"🚁 Missão: "+g.missao}`:"";
       const detalhe=[g.municipio,viatura?`🚒 ${viatura}`:null,`${(EFETIVO_GCIFS?.[id]||[]).length} BM`].filter(Boolean).join(" • ")+recurso+missao+destino;
       btn.innerHTML=`<div><div class="gcif-nav-name">GCIF ${id}</div><div class="gcif-nav-meta">${detalhe}</div></div><span class="gcif-nav-status ${statusClasse(g.status)}">${g.status||"—"}</span>`;
       btn.onclick=()=>irParaGcif(id);
       box.appendChild(btn);
+      if(id==="01"&&(EFETIVO_GCIFS?.APOIO_RIZETTO||[]).length){
+        const apoio=EFETIVO_GCIFS.APOIO_RIZETTO;
+        const card=document.createElement("button");
+        card.className="gcif-apoio-card";
+        const heading=document.createElement("strong");
+        heading.textContent="🚁 Apoio operacional • CAP Rizetto";
+        const nomes=document.createElement("small");
+        nomes.textContent=apoio.map(m=>m.posto+" "+m.nome).join(" • ");
+        const observacao=document.createElement("small");
+        observacao.textContent="SD William com drone • desvinculado da GCIF 01";
+        card.append(heading,nomes,observacao);
+        card.onclick=irParaApoioRizetto;
+        box.appendChild(card);
+      }
       if(id==="02"&&(EFETIVO_GCIFS?.BASE_GUANAMBI||[]).length){
         const equipe=EFETIVO_GCIFS.BASE_GUANAMBI,standby=document.createElement("button");
         standby.className="gcif-base-standby";
@@ -588,6 +624,7 @@
     gcifNavRefs.clear();
     gcifDestinationRefs.clear();
     standbyGuanambiMarker=null;
+    apoioRizettoMarker=null;
     // Não apresentar a GCIF deslocada como estando fisicamente na base.
     const grupos = agruparGcifs().filter(g=>!(g.ids.length===1&&
       norm(GCIFS_DATA[g.ids[0]]?.status).includes("desloc")&&
@@ -629,21 +666,32 @@
       const mesmoPontoDeOutraGCIF=Object.entries(GCIFS_DATA||{}).some(([otherId,other])=>otherId!==id&&
         Number.isFinite(other?.lat)&&Number.isFinite(other?.lng)&&
         Math.abs(other.lat-g.destino_lat)<0.00001&&Math.abs(other.lng-g.destino_lng)<0.00001);
-      const pontoDeEncontro=g.missao?"🚁":"🎯";
+      const pontoDeEncontro=g.entrega_status==="Concluída"?"🏠":g.missao?"🚁":"🎯";
       const marker=L.marker(pos,{
         keyboard:false,zIndexOffset:1100,
         // Deslocar apenas o DESENHO do destino, para não cobrir o marcador da GCIF 02.
         icon:L.divIcon({className:"gcif-dest-icon",html:'<div class="gcif-dest-pin">'+pontoDeEncontro+'</div>',
           iconSize:[30,30],iconAnchor:mesmoPontoDeOutraGCIF?[-21,15]:[15,15],popupAnchor:[0,-17]})
       }).addTo(guarnicaoLayer);
-      marker.bindTooltip((g.missao?"🚁 Entrega de SD William/drone • GCIF "+id:"🎯 Destino GCIF "+id)+" • Em deslocamento",{direction:"top",offset:[0,-16]});
-      marker.bindPopup(()=>'<div class="popup-title">'+(g.missao?"🚁 Entrega SD William/drone • Destino GCIF "+id:"🎯 Destino GCIF "+id)+'</div><div class="popup-row"><span>Status</span><b>Em deslocamento</b></div><div class="popup-row"><span>Viatura</span><b>🚒 '+(VIATURAS?.porGcif?.[id]||"—")+'</b></div>'+
+      marker.bindTooltip((g.entrega_status==="Concluída"?"🚒 Retorno à Base Brumado • GCIF "+id:g.missao?"🚁 Missão GCIF "+id:"🎯 Destino GCIF "+id)+" • Em deslocamento",{direction:"top",offset:[0,-16]});
+      marker.bindPopup(()=>'<div class="popup-title">'+(g.entrega_status==="Concluída"?"🏠 Retorno à Base • GCIF "+id:g.missao?"🚁 Missão GCIF "+id:"🎯 Destino GCIF "+id)+'</div><div class="popup-row"><span>Status</span><b>Em deslocamento</b></div><div class="popup-row"><span>Viatura</span><b>🚒 '+(VIATURAS?.porGcif?.[id]||"—")+'</b></div>'+
         (g.missao?'<div class="popup-row"><span>Missão</span><b>'+g.missao+'</b></div><div class="popup-foot">'+(g.entrega_status||"Entrega não confirmada")+'</div>':"")+
         '<div class="popup-row"><span>Coordenadas do destino</span><b>'+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+'</b></div><div class="gcif-group-title">Efetivo em deslocamento</div>'+efetivoOrdenado(id).map(memberHtml).join("")+'<div class="popup-foot">Marcador de destino, não localização atual da guarnição; posição durante o trajeto não informada.</div>',{maxWidth:400});
       gcifDestinationRefs.set(id,marker);
       latlngs.push(pos);
     }
-    // SD ADRIO e SD COSTA mantidos na base, sem a AR 1818.
+    // O ponto é o local INFORMADO da entrega, não rastreamento em tempo real.
+    const entregue=GCIFS_DATA?.["01"],apoio=EFETIVO_GCIFS?.APOIO_RIZETTO||[];
+    if(apoio.length&&Number.isFinite(entregue?.entrega_lat)&&Number.isFinite(entregue?.entrega_lng)){
+      const loc=[entregue.entrega_lat,entregue.entrega_lng];
+      apoioRizettoMarker=L.marker(loc,{keyboard:false,zIndexOffset:1080,
+        icon:L.divIcon({className:"gcif-apoio-icon",html:'<div class="gcif-apoio-pin">🚁</div>',iconSize:[34,34],iconAnchor:[17,17],popupAnchor:[0,-18]})
+      }).addTo(guarnicaoLayer);
+      apoioRizettoMarker.bindTooltip("Ponto da entrega • CAP Rizetto e SD William • drone",{direction:"top",offset:[0,-18]});
+      apoioRizettoMarker.bindPopup(()=>'<div class="popup-title">🚁 Apoio operacional • Drone</div><div class="popup-row"><span>Responsável</span><b>CAP Rizetto</b></div><div class="popup-row"><span>Efetivo</span><b>SD William</b></div><div class="popup-row"><span>Origem</span><b>GCIF 01 • entrega concluída</b></div><div class="popup-row"><span>Equipamento</span><b>Drone</b></div><div class="popup-foot">Marcador do último ponto informado da entrega: '+entregue.entrega_lat.toFixed(6)+', '+entregue.entrega_lng.toFixed(6)+'. Não é rastreamento em tempo real.</div>',{maxWidth:380});
+      latlngs.push(loc);
+    }
+    // Reserva residual em Guanambi, se houver.
     const reserva=EFETIVO_GCIFS?.BASE_GUANAMBI||[],origem=GCIFS_DATA?.["02"];
     if(reserva.length&&Number.isFinite(origem?.base_lat)&&Number.isFinite(origem?.base_lng)){
       const point=[origem.base_lat,origem.base_lng];
