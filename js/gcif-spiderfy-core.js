@@ -560,7 +560,7 @@
       const viatura=VIATURAS.porGcif?.[id];
       const recurso=temDrone(id)?" • 🚁 Drone":"";
       const destino=Number.isFinite(g.destino_lat)&&Number.isFinite(g.destino_lng)?" • 🎯 Destino: "+g.destino_lat.toFixed(6)+", "+g.destino_lng.toFixed(6):"";
-      const missao=g.apoio_gcif?` • 🚁 Encontro com GCIF ${g.apoio_gcif} (entrega pendente)`:"";
+      const missao=g.missao?` • 🚁 Entrega de SD William/drone (${g.entrega_status||"pendente"})`:"";
       const detalhe=[g.municipio,viatura?`🚒 ${viatura}`:null,`${(EFETIVO_GCIFS?.[id]||[]).length} BM`].filter(Boolean).join(" • ")+recurso+missao+destino;
       btn.innerHTML=`<div><div class="gcif-nav-name">GCIF ${id}</div><div class="gcif-nav-meta">${detalhe}</div></div><span class="gcif-nav-status ${statusClasse(g.status)}">${g.status||"—"}</span>`;
       btn.onclick=()=>irParaGcif(id);
@@ -629,16 +629,16 @@
       const mesmoPontoDeOutraGCIF=Object.entries(GCIFS_DATA||{}).some(([otherId,other])=>otherId!==id&&
         Number.isFinite(other?.lat)&&Number.isFinite(other?.lng)&&
         Math.abs(other.lat-g.destino_lat)<0.00001&&Math.abs(other.lng-g.destino_lng)<0.00001);
-      const pontoDeEncontro=g.apoio_gcif?"🤝":"🎯";
+      const pontoDeEncontro=g.missao?"🚁":"🎯";
       const marker=L.marker(pos,{
         keyboard:false,zIndexOffset:1100,
         // Deslocar apenas o DESENHO do destino, para não cobrir o marcador da GCIF 02.
         icon:L.divIcon({className:"gcif-dest-icon",html:'<div class="gcif-dest-pin">'+pontoDeEncontro+'</div>',
           iconSize:[30,30],iconAnchor:mesmoPontoDeOutraGCIF?[-21,15]:[15,15],popupAnchor:[0,-17]})
       }).addTo(guarnicaoLayer);
-      marker.bindTooltip((g.apoio_gcif?"🤝 Encontro com GCIF "+g.apoio_gcif:"🌊 Destino GCIF "+id)+" • Em deslocamento",{direction:"top",offset:[0,-16]});
-      marker.bindPopup(()=>'<div class="popup-title">'+(g.apoio_gcif?"🤝 Encontro GCIF "+id+" → GCIF "+g.apoio_gcif:"🌊 "+(g.ocorrencia_natureza||"Ocorrência")+" • Destino GCIF "+id)+'</div><div class="popup-row"><span>Status</span><b>Em deslocamento</b></div><div class="popup-row"><span>Viatura</span><b>🚒 '+(VIATURAS?.porGcif?.[id]||"—")+'</b></div>'+
-        (g.missao?'<div class="popup-row"><span>Missão</span><b>'+g.missao+'</b></div><div class="popup-foot">Entrega do SD William e drone ainda não confirmada.</div>':"")+
+      marker.bindTooltip((g.missao?"🚁 Entrega de SD William/drone • GCIF "+id:"🎯 Destino GCIF "+id)+" • Em deslocamento",{direction:"top",offset:[0,-16]});
+      marker.bindPopup(()=>'<div class="popup-title">'+(g.missao?"🚁 Entrega SD William/drone • Destino GCIF "+id:"🎯 Destino GCIF "+id)+'</div><div class="popup-row"><span>Status</span><b>Em deslocamento</b></div><div class="popup-row"><span>Viatura</span><b>🚒 '+(VIATURAS?.porGcif?.[id]||"—")+'</b></div>'+
+        (g.missao?'<div class="popup-row"><span>Missão</span><b>'+g.missao+'</b></div><div class="popup-foot">'+(g.entrega_status||"Entrega não confirmada")+'</div>':"")+
         '<div class="popup-row"><span>Coordenadas do destino</span><b>'+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+'</b></div><div class="gcif-group-title">Efetivo em deslocamento</div>'+efetivoOrdenado(id).map(memberHtml).join("")+'<div class="popup-foot">Marcador de destino, não localização atual da guarnição; posição durante o trajeto não informada.</div>',{maxWidth:400});
       gcifDestinationRefs.set(id,marker);
       latlngs.push(pos);

@@ -8,12 +8,11 @@
     "base_lat": -14.212431376902039,
     "base_lng": -41.67874843304984,
     "base_local": "2ª Companhia do 7º BBM — Brumado",
-    "destino_lat": -14.554063159794115,
-    "destino_lng": -43.76389810068249,
-    "destino_descricao": "Ponto de encontro com a GCIF 02 — ocorrência de alagamento",
-    "apoio_gcif": "02",
-    "missao": "Entregar o SD William e o drone à GCIF 02",
-    "entrega_status": "Pendente — não confirmada"
+    "destino_lat": -14.339431,
+    "destino_lng": -43.770178,
+    "destino_descricao": "Ponto de entrega do SD William e drone",
+    "missao": "Deixar o SD William e o drone no ponto informado",
+    "entrega_status": "Pendente — ainda não confirmada"
   },
   "02": {
     "municipio": "Município a confirmar",
