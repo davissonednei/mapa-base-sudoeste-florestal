@@ -1,18 +1,18 @@
 {
-  "atualizado_em": "2026-11-18T01:43:44Z",
-  "ultima_tentativa": "2026-11-18T01:43:44Z",
+  "atualizado_em": "2026-11-18T09:16:06Z",
+  "ultima_tentativa": "2026-11-18T09:16:06Z",
   "disponivel": true,
   "consulta_ok": true,
   "avisos": [
     {
-      "id": "28720",
+      "id": "28721",
       "tipo": "Tempestade",
       "severidade": "Perigo Potencial",
-      "inicio": "2026-11-17",
-      "fim": "2026-11-17",
-      "hora_inicio": "09:00",
+      "inicio": "2026-11-18",
+      "fim": "2026-11-18",
+      "hora_inicio": "00:00",
       "hora_fim": "23:59",
-      "janela": "2026-11-17 09:00 até 2026-11-17 23:59",
+      "janela": "2026-11-18 00:00 até 2026-11-18 23:59",
       "descricao": "Tempestade",
       "riscos": "Chuva entre 20 e 30 mm/h ou até 50 mm/dia, ventos intensos (40-60 km/h), e queda de granizo. Baixo risco de corte de energia elétrica, estragos em plantações, queda de galhos de árvores e de alagamentos.",
       "instrucoes": "Em caso de rajadas de vento: (não se abrigue debaixo de árvores, pois há leve risco de queda e descargas elétricas e não estacione veículos próximos a torres de transmissão e placas de propaganda).\nEvite usar aparelhos eletrônicos ligados à tomada.\nObtenha mais informações junto à Defesa Civil (telefone 199) e ao Corpo de Bombeiros (telefone 193).",
@@ -75,17 +75,17 @@
         "Vitória da Conquista",
         "Érico Cardoso"
       ],
-      "url": "https://avisos.inmet.gov.br/28720"
+      "url": "https://avisos.inmet.gov.br/28721"
     },
     {
-      "id": "28716",
+      "id": "28718",
       "tipo": "Tempestade",
       "severidade": "Perigo",
-      "inicio": "2026-11-17",
-      "fim": "2026-11-17",
+      "inicio": "2026-11-18",
+      "fim": "2026-11-18",
       "hora_inicio": "00:00",
       "hora_fim": "23:59",
-      "janela": "2026-11-17 00:00 até 2026-11-17 23:59",
+      "janela": "2026-11-18 00:00 até 2026-11-18 23:59",
       "descricao": "Tempestade",
       "riscos": "Chuva entre 30 e 60 mm/h ou 50 e 100 mm/dia, ventos intensos (60-100 km/h), e queda de granizo. Risco de corte de energia elétrica, estragos em plantações,  queda de árvores e de alagamentos.",
       "instrucoes": "Em caso de rajadas de vento: (não se abrigue debaixo de árvores, pois há risco de queda e descargas elétricas e não estacione veículos próximos a torres de transmissão e placas de propaganda).\nSe possível, desligue aparelhos elétricos e quadro geral de energia.\nObtenha mais informações junto à Defesa Civil (telefone 199) e ao Corpo de Bombeiros (telefone 193).",
@@ -148,7 +148,7 @@
         "Vitória da Conquista",
         "Érico Cardoso"
       ],
-      "url": "https://avisos.inmet.gov.br/28716"
+      "url": "https://avisos.inmet.gov.br/28718"
     }
   ],
   "fonte": "INMET (apenas avisos vigentes no instante da consulta)"
