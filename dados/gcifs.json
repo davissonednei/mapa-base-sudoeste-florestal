@@ -26,18 +26,14 @@
     "ocorrencia_natureza": "Alagamento"
   },
   "03": {
-    "municipio": "Município a confirmar",
-    "local": "Última posição informada — local da primeira resposta (origem do retorno)",
-    "status": "Em deslocamento",
-    "lat": -14.338979,
-    "lng": -40.910013,
+    "municipio": "Vitória da Conquista",
+    "local": "Base Florestal Sudoeste — Vitória da Conquista",
+    "status": "Em prontidão",
+    "lat": -14.866124758187732,
+    "lng": -40.863157433033564,
     "base_lat": -14.866124758187732,
     "base_lng": -40.863157433033564,
-    "base_local": "Base Florestal Sudoeste — Vitória da Conquista",
-    "missao": "Retorno à Base Florestal Sudoeste — Vitória da Conquista",
-    "destino_lat": -14.866124758187732,
-    "destino_lng": -40.863157433033564,
-    "destino_descricao": "Base Florestal Sudoeste — Vitória da Conquista (retorno)"
+    "base_local": "Base Florestal Sudoeste — Vitória da Conquista"
   },
   "04": {
     "municipio": "Vitória da Conquista",
