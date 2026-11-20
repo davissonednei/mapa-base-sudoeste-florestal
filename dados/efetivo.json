@@ -161,13 +161,5 @@
       "funcao_adicional": "MOTORISTA",
       "viatura": "2016"
     }
-  ],
-  "APOIO_RIZETTO": [
-    {
-      "posto": "CAP",
-      "nome": "RIZETTO",
-      "funcao": "RESPONSÁVEL",
-      "numero": null
-    }
   ]
 }

@@ -148,7 +148,6 @@
     const deslocamento=ids.filter(id=>norm(GCIFS_DATA[id]?.status).includes("desloc")).length;
     const efetivoGcifs=ids.reduce((sum,id)=>sum+(EFETIVO_GCIFS?.[id]||[]).length,0);
     const prontidaoBase=(EFETIVO_GCIFS?.BASE_GUANAMBI||[]).length;
-    const apoio=(EFETIVO_GCIFS?.APOIO_RIZETTO||[]).length;
     const staff=(EFETIVO_GCIFS?.STAFF||[]).length;
     const viaturas=Object.keys(VIATURAS?.frota||{}).length;
     box.innerHTML=`
@@ -160,7 +159,7 @@
       <div class="ops-stat"><b>${staff}</b><span>STAFF</span></div>
       <div class="ops-stat"><b>${viaturas}</b><span>Viaturas</span></div>
       <div class="ops-stat prontidao"><b>${prontidaoBase}</b><span>BM base</span></div>
-      <div class="ops-stat"><b>${apoio}</b><span>Apoio</span></div>`;
+`;
   }
 
   function prepararSidebar(){
