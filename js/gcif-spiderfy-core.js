@@ -666,15 +666,15 @@
       const mesmoPontoDeOutraGCIF=Object.entries(GCIFS_DATA||{}).some(([otherId,other])=>otherId!==id&&
         Number.isFinite(other?.lat)&&Number.isFinite(other?.lng)&&
         Math.abs(other.lat-g.destino_lat)<0.00001&&Math.abs(other.lng-g.destino_lng)<0.00001);
-      const pontoDeEncontro=g.entrega_status==="Concluída"?"🏠":g.entrega_status?"🚁":g.missao?"🚨":"🎯";
+      const pontoDeEncontro="🎯";
       const marker=L.marker(pos,{
         keyboard:false,zIndexOffset:1100,
         // Deslocar apenas o DESENHO do destino, para não cobrir o marcador da GCIF 02.
         icon:L.divIcon({className:"gcif-dest-icon",html:'<div class="gcif-dest-pin">'+pontoDeEncontro+'</div>',
           iconSize:[30,30],iconAnchor:mesmoPontoDeOutraGCIF?[-21,15]:[15,15],popupAnchor:[0,-17]})
       }).addTo(guarnicaoLayer);
-      marker.bindTooltip((g.entrega_status==="Concluída"?"🚒 Retorno à Base Brumado • GCIF "+id:g.missao?(g.entrega_status?"🚁":"🚨")+" GCIF "+id+" • "+g.missao:"🎯 Destino GCIF "+id)+" • Em deslocamento",{direction:"top",offset:[0,-16]});
-      marker.bindPopup(()=>'<div class="popup-title">'+(g.entrega_status==="Concluída"?"🏠 Retorno à Base • GCIF "+id:g.missao?(g.entrega_status?"🚁":"🚨")+" Missão GCIF "+id:"🎯 Destino GCIF "+id)+'</div><div class="popup-row"><span>Status</span><b>Em deslocamento</b></div><div class="popup-row"><span>Viatura</span><b>🚒 '+(VIATURAS?.porGcif?.[id]||"—")+'</b></div>'+
+      marker.bindTooltip("🎯 Destino GCIF "+id+(g.missao?" • "+g.missao:"")+" • Em deslocamento",{direction:"top",offset:[0,-16]});
+      marker.bindPopup(()=>'<div class="popup-title">🎯 Destino GCIF '+id+'</div><div class="popup-row"><span>Status</span><b>Em deslocamento</b></div><div class="popup-row"><span>Viatura</span><b>🚒 '+(VIATURAS?.porGcif?.[id]||"—")+'</b></div>'+
         (g.missao?'<div class="popup-row"><span>Missão</span><b>'+g.missao+'</b></div>'+(g.entrega_status?'<div class="popup-foot">'+g.entrega_status+'</div>':""):"")+
         '<div class="popup-row"><span>Coordenadas do destino</span><b>'+g.destino_lat.toFixed(6)+', '+g.destino_lng.toFixed(6)+'</b></div><div class="gcif-group-title">Efetivo em deslocamento</div>'+efetivoOrdenado(id).map(memberHtml).join("")+'<div class="popup-foot">Marcador de destino, não localização atual da guarnição; posição durante o trajeto não informada.</div>',{maxWidth:400});
       gcifDestinationRefs.set(id,marker);
