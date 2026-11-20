@@ -1,19 +1,13 @@
 {
   "01": {
     "municipio": "Brumado",
-    "local": "2ª Companhia do 7º BBM — Brumado (última posição conhecida, origem)",
-    "status": "Em deslocamento",
+    "local": "2ª Companhia do 7º BBM — Brumado",
+    "status": "Em prontidão",
     "lat": -14.212431376902039,
     "lng": -41.67874843304984,
     "base_lat": -14.212431376902039,
     "base_lng": -41.67874843304984,
     "base_local": "2ª Companhia do 7º BBM — Brumado",
-    "destino_lat": -13.4059,
-    "destino_lng": -41.284,
-    "destino_descricao": "Ibicoara — sede urbana de referência (ponto exato não informado)",
-    "missao": "Apoio ao serviço ordinário em Ibicoara",
-    "destino_municipio": "Ibicoara",
-    "destino_referencia": "Sede urbana; localização exata da atividade não informada",
     "historico_ultima_entrega": {
       "status": "Concluída",
       "lat": -14.339431,
