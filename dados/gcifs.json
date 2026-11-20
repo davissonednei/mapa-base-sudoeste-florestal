@@ -27,14 +27,17 @@
   },
   "03": {
     "municipio": "Município a confirmar",
-    "local": "Local de primeira resposta — posição informada pela operação",
-    "status": "No local",
+    "local": "Última posição informada — local da primeira resposta (origem do retorno)",
+    "status": "Em deslocamento",
     "lat": -14.338979,
     "lng": -40.910013,
     "base_lat": -14.866124758187732,
     "base_lng": -40.863157433033564,
     "base_local": "Base Florestal Sudoeste — Vitória da Conquista",
-    "missao": "Realizar primeira resposta"
+    "missao": "Retorno à Base Florestal Sudoeste — Vitória da Conquista",
+    "destino_lat": -14.866124758187732,
+    "destino_lng": -40.863157433033564,
+    "destino_descricao": "Base Florestal Sudoeste — Vitória da Conquista (retorno)"
   },
   "04": {
     "municipio": "Vitória da Conquista",
