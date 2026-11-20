@@ -31,13 +31,17 @@
   },
   "03": {
     "municipio": "Vitória da Conquista",
-    "local": "Base Florestal Sudoeste — 7º BBM",
-    "status": "Em prontidão",
+    "local": "Base Florestal Sudoeste — Vitória da Conquista (origem do deslocamento)",
+    "status": "Em deslocamento",
     "lat": -14.866124758187732,
     "lng": -40.863157433033564,
     "base_lat": -14.866124758187732,
     "base_lng": -40.863157433033564,
-    "base_local": "Base Florestal Sudoeste — Vitória da Conquista"
+    "base_local": "Base Florestal Sudoeste — Vitória da Conquista",
+    "destino_lat": -14.338979,
+    "destino_lng": -40.910013,
+    "destino_descricao": "Local de primeira resposta (coordenadas informadas)",
+    "missao": "Realizar primeira resposta"
   },
   "04": {
     "municipio": "Vitória da Conquista",
