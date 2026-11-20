@@ -23,6 +23,12 @@
       "nome": "ANDRADE",
       "funcao": "",
       "numero": null
+    },
+    {
+      "posto": "SD",
+      "nome": "COSTA",
+      "funcao": "",
+      "numero": null
     }
   ],
   "02": [
@@ -53,12 +59,6 @@
     {
       "posto": "SD",
       "nome": "ADRIO",
-      "funcao": "",
-      "numero": null
-    },
-    {
-      "posto": "SD",
-      "nome": "COSTA",
       "funcao": "",
       "numero": null
     },
