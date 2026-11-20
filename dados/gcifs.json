@@ -14,8 +14,8 @@
   },
   "02": {
     "municipio": "Município a confirmar",
-    "local": "Ocorrência de alagamento — região informada pela operação",
-    "status": "Em combate",
+    "local": "Apoio na ocorrência de alagamento — local informado pela operação",
+    "status": "Em apoio no local",
     "lat": -14.554063159794115,
     "lng": -43.76389810068249,
     "base_lat": -14.21341197903119,

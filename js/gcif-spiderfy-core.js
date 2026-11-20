@@ -8,7 +8,7 @@
     .gcif-marker-wrap{position:relative;width:46px;height:46px}.gcif-marker-wrap .pin{position:absolute;left:4px;top:4px}
     .marker-status,.cluster-status{position:absolute;width:13px;height:13px;border-radius:50%;border:2px solid #0d1721;box-shadow:0 2px 5px rgba(0,0,0,.35)}
     .marker-status{right:0;bottom:0}.cluster-status{right:-4px;bottom:-4px}
-    .marker-combate{background:#ef4444}.marker-prontidao{background:#22c55e}.marker-deslocamento{background:#f59e0b}.marker-neutro{background:#94a3b8}
+    .marker-combate{background:#ef4444}.marker-prontidao{background:#22c55e}.marker-deslocamento,.marker-apoio{background:#f59e0b}.marker-neutro{background:#94a3b8}
     .marker-equip,.cluster-equip{position:absolute;display:grid;place-items:center;background:#0d1721;border:1px solid rgba(255,255,255,.8);box-shadow:0 2px 6px rgba(0,0,0,.42);border-radius:999px;font-style:normal;line-height:1}
     .marker-equip{left:-5px;top:-7px;width:24px;height:24px;font-size:14px}.cluster-equip{left:-9px;top:-10px;width:25px;height:25px;font-size:14px}
     .accordion-title{display:flex!important;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;user-select:none;padding:9px 8px;margin:9px 0 0!important;border:1px solid #213243;border-radius:9px;background:#0a151f;color:#b8c8d4!important;transition:.15s ease}
@@ -42,7 +42,7 @@
     .gcif-nav-status{align-self:center;font-size:8px;font-weight:900;border-radius:999px;padding:5px 7px;white-space:nowrap}
     .gcif-nav-status.status-prontidao{border:1px solid rgba(34,197,94,.45);background:rgba(34,197,94,.12);color:#9cebb8}
     .gcif-nav-status.status-deslocamento{border:1px solid rgba(245,158,11,.48);background:rgba(245,158,11,.12);color:#ffd18a}
-    .gcif-nav-status.status-prevencao{border:1px solid rgba(245,158,11,.45);background:rgba(245,158,11,.12);color:#ffd18a}
+    .gcif-nav-status.status-prevencao,.gcif-nav-status.status-apoio{border:1px solid rgba(245,158,11,.45);background:rgba(245,158,11,.12);color:#ffd18a}
     .gcif-nav-status.status-combate{border:1px solid rgba(239,68,68,.45);background:rgba(239,68,68,.12);color:#ff9c9c}
     .gcif-nav-status.status-neutro{border:1px solid rgba(148,163,184,.4);background:rgba(148,163,184,.1);color:#cbd5e1}
     header .brand{flex:none}.header-ops-summary{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:7px;margin:0 16px}
@@ -55,7 +55,7 @@
     .ops-search-results.show{display:block}.ops-search-item{width:100%;border:0;border-bottom:1px solid #1d2d3b;background:transparent;color:white;text-align:left;padding:8px 10px;cursor:pointer}.ops-search-item:last-child{border-bottom:0}.ops-search-item:hover{background:#0d1c29}.ops-search-item b{display:block;font-size:11px}.ops-search-item small{display:block;color:#8fa4b5;font-size:9px;margin-top:3px}
     .gcif-quick-card{display:none;margin:8px 0 9px;border:1px solid #2b4153;border-radius:11px;background:#0a151f;overflow:hidden;box-shadow:0 7px 18px rgba(0,0,0,.18)}.gcif-quick-card.show{display:block}
     .quick-head{display:flex;align-items:center;gap:7px;padding:9px 10px;border-bottom:1px solid #213243}.quick-title{font-size:13px;font-weight:900;margin-right:auto}.quick-close{border:0;background:transparent;color:#7f93a4;font-size:16px;cursor:pointer;padding:0 2px}.quick-status{font-size:8px;font-weight:900;border-radius:999px;padding:5px 7px;white-space:nowrap}
-    .quick-status.status-combate{color:#ff9c9c;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4)}.quick-status.status-prontidao{color:#9cebb8;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.35)}.quick-status.status-deslocamento{color:#ffd18a;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35)}.quick-status.status-neutro{color:#cbd5e1;background:rgba(148,163,184,.1);border:1px solid rgba(148,163,184,.35)}
+    .quick-status.status-combate{color:#ff9c9c;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4)}.quick-status.status-prontidao{color:#9cebb8;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.35)}.quick-status.status-deslocamento,.quick-status.status-apoio{color:#ffd18a;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35)}.quick-status.status-neutro{color:#cbd5e1;background:rgba(148,163,184,.1);border:1px solid rgba(148,163,184,.35)}
     .quick-body{padding:9px 10px}.quick-place{font-size:10px;color:#9dafbe;margin-bottom:8px}.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}.quick-metric{border:1px solid #1f3040;border-radius:8px;background:#0d1a26;padding:7px}.quick-metric span{display:block;font-size:8px;color:#8399ab;text-transform:uppercase;font-weight:800}.quick-metric b{display:block;font-size:11px;color:#fff;margin-top:3px}
     .quick-line{font-size:10px;line-height:1.45;margin-top:5px;color:#dbe6ee}.quick-line span{color:#8298aa}.quick-resource{margin-top:7px;border:1px solid rgba(56,189,248,.3);background:rgba(56,189,248,.08);color:#b8e8ff;border-radius:8px;padding:7px 8px;font-size:10px;font-weight:800}
     .system-detail{display:none!important}.system-status.err .system-dot{background:#22c55e!important}
@@ -144,6 +144,7 @@
     const ids=Object.keys(GCIFS_DATA||{});
     const contar=trecho=>ids.filter(id=>norm(GCIFS_DATA[id]?.status).includes(trecho)).length;
     const combate=contar("combate");
+    const apoioOperacional=contar("apoio");
     const prontidao=contar("prontidao");
     const deslocamento=ids.filter(id=>norm(GCIFS_DATA[id]?.status).includes("desloc")).length;
     const efetivoGcifs=ids.reduce((sum,id)=>sum+(EFETIVO_GCIFS?.[id]||[]).length,0);
@@ -153,6 +154,7 @@
     box.innerHTML=`
       <div class="ops-stat"><b>${ids.length}</b><span>GCIFs</span></div>
       <div class="ops-stat combate"><b>${combate}</b><span>Combate</span></div>
+      <div class="ops-stat deslocamento"><b>${apoioOperacional}</b><span>Apoio</span></div>
       <div class="ops-stat prontidao"><b>${prontidao}</b><span>Prontidão</span></div>
       <div class="ops-stat deslocamento"><b>${deslocamento}</b><span>Desloc.</span></div>
       <div class="ops-stat"><b>${efetivoGcifs}</b><span>BM GCIF</span></div>
@@ -325,6 +327,7 @@
   function statusIndicadorClasse(status){
     const s=norm(status);
     if(s.includes("combate")) return "marker-combate";
+    if(s.includes("apoio")) return "marker-apoio";
     if(s.includes("prontidao")) return "marker-prontidao";
     if(s.includes("desloc")) return "marker-deslocamento";
     return "marker-neutro";
@@ -333,6 +336,7 @@
   function quickStatusClasse(status){
     const s=norm(status);
     if(s.includes("combate")) return "status-combate";
+    if(s.includes("apoio")) return "status-apoio";
     if(s.includes("prontidao")) return "status-prontidao";
     if(s.includes("desloc")) return "status-deslocamento";
     return "status-neutro";
@@ -359,6 +363,7 @@
   function statusGrupoIndicador(ids){
     const sts=ids.map(id=>GCIFS_DATA[id]?.status||"");
     if(sts.some(s=>norm(s).includes("combate"))) return "marker-combate";
+    if(sts.some(s=>norm(s).includes("apoio"))) return "marker-apoio";
     if(sts.some(s=>norm(s).includes("desloc"))) return "marker-deslocamento";
     if(sts.some(s=>norm(s).includes("prontidao"))) return "marker-prontidao";
     return "marker-neutro";
@@ -432,7 +437,7 @@
     const recursos=recursosGcif(id);
     const recursoHtml=recursos.length?`<div class="quick-resource">${recursos.map(m=>`${m.equipamento} — ${m.posto} ${m.nome}`).join("<br>")}</div>`:"";
     const local=[g.municipio,g.local].filter(Boolean).join(" • ")||"Local não informado";
-    const evento=g.ocorrencia_natureza?`<div class="quick-resource">🌊 Ocorrência: ${g.ocorrencia_natureza} • ${norm(g.status).includes("combate")?"equipe no local, em combate":"em deslocamento"}</div><div class="quick-line"><span>Efetivo empenhado:</span> <b>${equipe.map(m=>m.posto+" "+m.nome).join(" • ")}</b></div>`:"";
+    const evento=g.ocorrencia_natureza?`<div class="quick-resource">🌊 Ocorrência: ${g.ocorrencia_natureza} • ${norm(g.status).includes("combate")?"equipe no local, em combate":norm(g.status).includes("apoio")?"equipe no local, prestando apoio":"em deslocamento"}</div><div class="quick-line"><span>Efetivo empenhado:</span> <b>${equipe.map(m=>m.posto+" "+m.nome).join(" • ")}</b></div>`:"";
     const destino=Number.isFinite(g.destino_lat)&&Number.isFinite(g.destino_lng)?'<div class="quick-resource">🎯 '+(g.destino_descricao||"Destino")+": "+g.destino_lat.toFixed(6)+", "+g.destino_lng.toFixed(6)+' • em deslocamento (posição atual não informada)</div>':"";
     const missao=g.missao?`<div class="quick-resource">${g.entrega_status?"🚁":"🚨"} Missão: ${g.missao}${g.entrega_status?" • "+g.entrega_status:""}</div>`:"";
     card.innerHTML=`
