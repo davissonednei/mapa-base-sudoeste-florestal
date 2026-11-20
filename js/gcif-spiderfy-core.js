@@ -73,7 +73,7 @@
   const gcifNavRefs = new Map();
   const gcifDestinationRefs = new Map();
   let standbyGuanambiMarker=null;
-  let apoioRizettoMarker=null;
+
   let spiderState = null;
   let gcifSelecionada = null;
 
@@ -472,8 +472,8 @@
       if(id==="STAFF") continue;
       if(id==="APOIO_RIZETTO"){
         for(const m of equipe||[]){
-          const texto=norm(`apoio rizetto drone william ${m.posto} ${m.nome}`);
-          if(texto.includes(q))resultados.push({tipo:"apoio",id:"APOIO_RIZETTO",titulo:`${m.posto} ${m.nome}`,sub:"Apoio operacional • CAP Rizetto e SD William • drone"});
+          const texto=norm(`apoio rizetto ${m.posto} ${m.nome}`);
+          if(texto.includes(q))resultados.push({tipo:"apoio",id:"APOIO_RIZETTO",titulo:`${m.posto} ${m.nome}`,sub:"Apoio operacional • localização não informada"});
         }
         continue;
       }
@@ -566,10 +566,8 @@
     if(standbyGuanambiMarker)setTimeout(()=>standbyGuanambiMarker.openPopup(),250);
   }
   function irParaApoioRizetto(){
-    const pos=apoioRizettoMarker?.getLatLng();
-    if(!pos)return;
-    map.setView(pos,Math.max(map.getZoom(),11),{animate:true});
-    setTimeout(()=>apoioRizettoMarker?.openPopup(),250);
+    const card=document.querySelector(".gcif-apoio-card");
+    card?.scrollIntoView({behavior:"smooth",block:"nearest"});
   }
   function renderListaGcifs(){
     const box=document.getElementById("gcifNavList");
@@ -589,16 +587,15 @@
       box.appendChild(btn);
       if(id==="01"&&(EFETIVO_GCIFS?.APOIO_RIZETTO||[]).length){
         const apoio=EFETIVO_GCIFS.APOIO_RIZETTO;
-        const card=document.createElement("button");
+        const card=document.createElement("div");
         card.className="gcif-apoio-card";
         const heading=document.createElement("strong");
-        heading.textContent="🚁 Apoio operacional • CAP Rizetto";
+        heading.textContent="Apoio operacional";
         const nomes=document.createElement("small");
         nomes.textContent=apoio.map(m=>m.posto+" "+m.nome).join(" • ");
         const observacao=document.createElement("small");
-        observacao.textContent="SD William com drone • desvinculado da GCIF 01";
+        observacao.textContent="Localização não informada • SD William agora na GCIF 02";
         card.append(heading,nomes,observacao);
-        card.onclick=irParaApoioRizetto;
         box.appendChild(card);
       }
       if(id==="02"&&(EFETIVO_GCIFS?.BASE_GUANAMBI||[]).length){
@@ -624,7 +621,7 @@
     gcifNavRefs.clear();
     gcifDestinationRefs.clear();
     standbyGuanambiMarker=null;
-    apoioRizettoMarker=null;
+
     // Não apresentar a GCIF deslocada como estando fisicamente na base.
     const grupos = agruparGcifs().filter(g=>!(g.ids.length===1&&
       norm(GCIFS_DATA[g.ids[0]]?.status).includes("desloc")&&
@@ -680,17 +677,8 @@
       gcifDestinationRefs.set(id,marker);
       latlngs.push(pos);
     }
-    // O ponto é o local INFORMADO da entrega, não rastreamento em tempo real.
-    const entregue=GCIFS_DATA?.["01"],apoio=EFETIVO_GCIFS?.APOIO_RIZETTO||[];
-    if(apoio.length&&Number.isFinite(entregue?.entrega_lat)&&Number.isFinite(entregue?.entrega_lng)){
-      const loc=[entregue.entrega_lat,entregue.entrega_lng];
-      apoioRizettoMarker=L.marker(loc,{keyboard:false,zIndexOffset:1080,
-        icon:L.divIcon({className:"gcif-apoio-icon",html:'<div class="gcif-apoio-pin">🚁</div>',iconSize:[34,34],iconAnchor:[17,17],popupAnchor:[0,-18]})
-      }).addTo(guarnicaoLayer);
-      apoioRizettoMarker.bindTooltip("Ponto da entrega • CAP Rizetto e SD William • drone",{direction:"top",offset:[0,-18]});
-      apoioRizettoMarker.bindPopup(()=>'<div class="popup-title">🚁 Apoio operacional • Drone</div><div class="popup-row"><span>Responsável</span><b>CAP Rizetto</b></div><div class="popup-row"><span>Efetivo</span><b>SD William</b></div><div class="popup-row"><span>Origem</span><b>GCIF 01 • entrega concluída</b></div><div class="popup-row"><span>Equipamento</span><b>Drone</b></div><div class="popup-foot">Marcador do último ponto informado da entrega: '+entregue.entrega_lat.toFixed(6)+', '+entregue.entrega_lng.toFixed(6)+'. Não é rastreamento em tempo real.</div>',{maxWidth:380});
-      latlngs.push(loc);
-    }
+    // O marcador antigo de entrega não representa mais a localização de William ou Rizetto.
+    // William agora integra a GCIF 02, enquanto a posição atual de Rizetto não foi informada.
     // Reserva residual em Guanambi, se houver.
     const reserva=EFETIVO_GCIFS?.BASE_GUANAMBI||[],origem=GCIFS_DATA?.["02"];
     if(reserva.length&&Number.isFinite(origem?.base_lat)&&Number.isFinite(origem?.base_lng)){
