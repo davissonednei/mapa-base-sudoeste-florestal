@@ -144,7 +144,7 @@
     const ids=Object.keys(GCIFS_DATA||{});
     const contar=trecho=>ids.filter(id=>norm(GCIFS_DATA[id]?.status).includes(trecho)).length;
     const combate=contar("combate");
-    const apoioOperacional=contar("apoio");
+    const apoioOperacional=contar("apoio")+contar("atuacao");
     const prontidao=contar("prontidao");
     const deslocamento=ids.filter(id=>norm(GCIFS_DATA[id]?.status).includes("desloc")).length;
     const efetivoGcifs=ids.reduce((sum,id)=>sum+(EFETIVO_GCIFS?.[id]||[]).length,0);
@@ -154,7 +154,7 @@
     box.innerHTML=`
       <div class="ops-stat"><b>${ids.length}</b><span>GCIFs</span></div>
       <div class="ops-stat combate"><b>${combate}</b><span>Combate</span></div>
-      <div class="ops-stat deslocamento"><b>${apoioOperacional}</b><span>Apoio</span></div>
+      <div class="ops-stat deslocamento"><b>${apoioOperacional}</b><span>Atuação</span></div>
       <div class="ops-stat prontidao"><b>${prontidao}</b><span>Prontidão</span></div>
       <div class="ops-stat deslocamento"><b>${deslocamento}</b><span>Desloc.</span></div>
       <div class="ops-stat"><b>${efetivoGcifs}</b><span>BM GCIF</span></div>
@@ -327,7 +327,7 @@
   function statusIndicadorClasse(status){
     const s=norm(status);
     if(s.includes("combate")) return "marker-combate";
-    if(s.includes("apoio")) return "marker-apoio";
+    if(s.includes("apoio")||s.includes("atuacao")) return "marker-apoio";
     if(s.includes("prontidao")) return "marker-prontidao";
     if(s.includes("desloc")) return "marker-deslocamento";
     return "marker-neutro";
@@ -336,7 +336,7 @@
   function quickStatusClasse(status){
     const s=norm(status);
     if(s.includes("combate")) return "status-combate";
-    if(s.includes("apoio")) return "status-apoio";
+    if(s.includes("apoio")||s.includes("atuacao")) return "status-apoio";
     if(s.includes("prontidao")) return "status-prontidao";
     if(s.includes("desloc")) return "status-deslocamento";
     return "status-neutro";
@@ -363,7 +363,7 @@
   function statusGrupoIndicador(ids){
     const sts=ids.map(id=>GCIFS_DATA[id]?.status||"");
     if(sts.some(s=>norm(s).includes("combate"))) return "marker-combate";
-    if(sts.some(s=>norm(s).includes("apoio"))) return "marker-apoio";
+    if(sts.some(s=>norm(s).includes("apoio")||norm(s).includes("atuacao"))) return "marker-apoio";
     if(sts.some(s=>norm(s).includes("desloc"))) return "marker-deslocamento";
     if(sts.some(s=>norm(s).includes("prontidao"))) return "marker-prontidao";
     return "marker-neutro";
