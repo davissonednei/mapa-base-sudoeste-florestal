@@ -1,18 +1,18 @@
 {
-  "atualizado_em": "2026-11-21T08:52:55Z",
-  "ultima_tentativa": "2026-11-21T08:52:55Z",
+  "atualizado_em": "2026-11-21T14:49:03Z",
+  "ultima_tentativa": "2026-11-21T14:49:03Z",
   "disponivel": true,
   "consulta_ok": true,
   "avisos": [
     {
-      "id": "28737",
+      "id": "28741",
       "tipo": "Tempestade",
       "severidade": "Perigo Potencial",
       "inicio": "2026-11-21",
-      "fim": "2026-11-21",
-      "hora_inicio": "00:00",
+      "fim": "2026-11-22",
+      "hora_inicio": "09:28",
       "hora_fim": "23:59",
-      "janela": "2026-11-21 00:00 até 2026-11-21 23:59",
+      "janela": "2026-11-21 09:28 até 2026-11-22 23:59",
       "descricao": "Tempestade",
       "riscos": "Chuva entre 20 e 30 mm/h ou até 50 mm/dia, ventos intensos (40-60 km/h), e queda de granizo. Baixo risco de corte de energia elétrica, estragos em plantações, queda de galhos de árvores e de alagamentos.",
       "instrucoes": "Em caso de rajadas de vento: (não se abrigue debaixo de árvores, pois há leve risco de queda e descargas elétricas e não estacione veículos próximos a torres de transmissão e placas de propaganda).\nEvite usar aparelhos eletrônicos ligados à tomada.\nObtenha mais informações junto à Defesa Civil (telefone 199) e ao Corpo de Bombeiros (telefone 193).",
@@ -21,6 +21,7 @@
         "Anagé",
         "Aracatu",
         "Barra da Estiva",
+        "Barra do Choça",
         "Belo Campo",
         "Botuporã",
         "Brumado",
@@ -61,6 +62,8 @@
         "Paramirim",
         "Pindaí",
         "Piripá",
+        "Planalto",
+        "Poções",
         "Presidente Jânio Quadros",
         "Rio de Contas",
         "Rio do Antônio",
@@ -72,7 +75,7 @@
         "Vitória da Conquista",
         "Érico Cardoso"
       ],
-      "url": "https://avisos.inmet.gov.br/28737"
+      "url": "https://avisos.inmet.gov.br/28741"
     }
   ],
   "fonte": "INMET (apenas avisos vigentes no instante da consulta)"
