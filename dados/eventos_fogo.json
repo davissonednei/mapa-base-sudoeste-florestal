@@ -1,5 +1,5 @@
 {
-  "atualizado_em": "2026-11-22T11:53:28.284701Z",
+  "atualizado_em": "2026-11-22T18:41:49.901683Z",
   "eventos": [
     {
       "id_evento": 7216039,
@@ -4173,7 +4173,7 @@
     },
     {
       "id_evento": 7226433,
-      "status_evento": "Ativo",
+      "status_evento": "Em observação",
       "dt_minima": "2026-11-21T15:16:00Z",
       "dt_maxima": "2026-11-21T16:56:00Z",
       "dt_ultima_visao": "2026-11-21T16:56:00Z",
