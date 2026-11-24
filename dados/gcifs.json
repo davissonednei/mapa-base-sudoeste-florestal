@@ -15,22 +15,21 @@
     }
   },
   "02": {
-    "municipio": "Município a confirmar",
-    "local": "Apoio na ocorrência de alagamento — local informado pela operação",
-    "status": "Em apoio no local",
-    "lat": -14.554063159794115,
-    "lng": -43.76389810068249,
+    "municipio": "Guanambi",
+    "local": "3ª Companhia do 7º BBM — Guanambi",
+    "status": "Em prontidão",
+    "lat": -14.21341197903119,
+    "lng": -42.77752191955733,
     "base_lat": -14.21341197903119,
     "base_lng": -42.77752191955733,
-    "base_local": "3ª Companhia do 7º BBM — Guanambi",
-    "ocorrencia_natureza": "Alagamento"
+    "base_local": "3ª Companhia do 7º BBM — Guanambi"
   },
   "03": {
-    "municipio": "Município a confirmar",
-    "local": "Atuação operacional — coordenadas informadas",
-    "status": "Em atuação no local",
-    "lat": -14.338378,
-    "lng": -40.910494,
+    "municipio": "Vitória da Conquista",
+    "local": "Base Florestal Sudoeste — Vitória da Conquista",
+    "status": "Em prontidão",
+    "lat": -14.866124758187732,
+    "lng": -40.863157433033564,
     "base_lat": -14.866124758187732,
     "base_lng": -40.863157433033564,
     "base_local": "Base Florestal Sudoeste — Vitória da Conquista"
