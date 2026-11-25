@@ -1,9 +1,9 @@
 {
-  "atualizado_em": "2026-11-24T21:29:02.403362Z",
+  "atualizado_em": "2026-11-25T04:27:33.164370Z",
   "eventos": [
     {
       "id_evento": 7223151,
-      "status_evento": "Ativo",
+      "status_evento": "Em observação",
       "dt_minima": "2026-11-20T03:57:00Z",
       "dt_maxima": "2026-11-24T04:23:00Z",
       "dt_ultima_visao": "2026-11-24T04:23:00Z",
@@ -347,7 +347,7 @@
     },
     {
       "id_evento": 7225907,
-      "status_evento": "Ativo",
+      "status_evento": "Em observação",
       "dt_minima": "2026-11-21T04:21:00Z",
       "dt_maxima": "2026-11-24T04:23:00Z",
       "dt_ultima_visao": "2026-11-24T04:23:00Z",
@@ -4827,7 +4827,7 @@
     },
     {
       "id_evento": 7233230,
-      "status_evento": "Ativo",
+      "status_evento": "Em observação",
       "dt_minima": "2026-11-23T16:17:00Z",
       "dt_maxima": "2026-11-24T04:23:00Z",
       "dt_ultima_visao": "2026-11-24T04:23:00Z",
@@ -5812,9 +5812,9 @@
       "dt_maxima": "2026-11-24T18:47:00Z",
       "dt_ultima_visao": "2026-11-24T18:47:00Z",
       "persistencia_dias": 1,
-      "area_total_evento": 1.5649752444231864,
-      "latitude": -12.548287801000452,
-      "longitude": -40.38102095312711,
+      "area_total_evento": 1.564975244422054,
+      "latitude": -12.548287801000454,
+      "longitude": -40.38102095312713,
       "dominio": "Área Não Identificada, Privado",
       "pais": "BRA",
       "municipio": "Itaberaba - BA",
@@ -5865,10 +5865,6 @@
         },
         "coordinates": [
           [
-            [
-              -40.385961111,
-              -12.547546166
-            ],
             [
               -40.386516508,
               -12.547093571
@@ -5936,6 +5932,10 @@
             [
               -40.381283543,
               -12.542006397
+            ],
+            [
+              -40.38086757,
+              -12.542509693
             ],
             [
               -40.38086757,
@@ -6148,6 +6148,10 @@
             [
               -40.385961111,
               -12.547546166
+            ],
+            [
+              -40.386516508,
+              -12.547093571
             ]
           ]
         ]
@@ -6160,7 +6164,7 @@
       "dt_maxima": "2026-11-24T18:47:00Z",
       "dt_ultima_visao": "2026-11-24T18:47:00Z",
       "persistencia_dias": 1,
-      "area_total_evento": 1.0039807431505448,
+      "area_total_evento": 1.0039807431617966,
       "latitude": -12.210145468789438,
       "longitude": -43.91288377370419,
       "dominio": "Área Não Identificada",
@@ -7047,7 +7051,7 @@
     },
     {
       "id_evento": 7233279,
-      "status_evento": "Ativo",
+      "status_evento": "Em observação",
       "dt_minima": "2026-11-23T16:17:00Z",
       "dt_maxima": "2026-11-23T23:20:00Z",
       "dt_ultima_visao": "2026-11-23T23:20:00Z",
@@ -9014,7 +9018,7 @@
       "status_evento": "Ativo",
       "dt_minima": "2026-11-24T15:58:00Z",
       "dt_maxima": "2026-11-24T18:47:00Z",
-      "dt_ultima_visao": "2026-11-24T21:10:20Z",
+      "dt_ultima_visao": "2026-11-24T18:47:00Z",
       "persistencia_dias": 0,
       "area_total_evento": 1.242071485504685,
       "latitude": -13.36648689403262,
@@ -9893,7 +9897,7 @@
       "dt_ultima_visao": "2026-11-24T18:47:00Z",
       "persistencia_dias": 0,
       "area_total_evento": 1.076190413910605,
-      "latitude": -13.89410179800374,
+      "latitude": -13.894101798003735,
       "longitude": -41.663840083902684,
       "dominio": "Área Não Identificada",
       "pais": "BRA",
@@ -9945,10 +9949,6 @@
         },
         "coordinates": [
           [
-            [
-              -41.669802618,
-              -13.894985239
-            ],
             [
               -41.670005303,
               -13.894305186
@@ -10176,6 +10176,10 @@
             [
               -41.669802618,
               -13.894985239
+            ],
+            [
+              -41.670005303,
+              -13.894305186
             ]
           ]
         ]
@@ -10188,8 +10192,8 @@
       "dt_maxima": "2026-11-24T18:47:00Z",
       "dt_ultima_visao": "2026-11-24T18:47:00Z",
       "persistencia_dias": 0,
-      "area_total_evento": 1.1449011030279201,
-      "latitude": -15.919963729836184,
+      "area_total_evento": 1.1449011030062153,
+      "latitude": -15.919963729836182,
       "longitude": -40.021416949702136,
       "dominio": "Privado",
       "pais": "BRA",
@@ -12030,7 +12034,7 @@
       "persistencia_dias": 0,
       "area_total_evento": 1.1276412022392397,
       "latitude": -12.114907940826376,
-      "longitude": -43.64683958684178,
+      "longitude": -43.64683958684177,
       "dominio": "Privado",
       "pais": "BRA",
       "municipio": "Muquém de São Francisco - BA",
@@ -12081,10 +12085,6 @@
         },
         "coordinates": [
           [
-            [
-              -43.649859576,
-              -12.120007888
-            ],
             [
               -43.650496629,
               -12.119676798
@@ -12300,6 +12300,10 @@
             [
               -43.649859576,
               -12.120007888
+            ],
+            [
+              -43.650496629,
+              -12.119676798
             ]
           ]
         ]
