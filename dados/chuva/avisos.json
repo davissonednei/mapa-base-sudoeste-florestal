@@ -1,34 +1,25 @@
 {
-  "atualizado_em": "2026-11-25T23:09:54Z",
-  "ultima_tentativa": "2026-11-25T23:09:54Z",
+  "atualizado_em": "2026-11-26T05:10:25Z",
+  "ultima_tentativa": "2026-11-26T05:10:25Z",
   "disponivel": true,
   "consulta_ok": true,
   "avisos": [
     {
-      "id": "28760",
-      "tipo": "Tempestade",
+      "id": "28762",
+      "tipo": "Chuvas Intensas",
       "severidade": "Perigo Potencial",
-      "inicio": "2026-11-25",
-      "fim": "2026-11-25",
+      "inicio": "2026-11-26",
+      "fim": "2026-11-26",
       "hora_inicio": "00:00",
       "hora_fim": "23:59",
-      "janela": "2026-11-25 00:00 até 2026-11-25 23:59",
-      "descricao": "Tempestade",
-      "riscos": "Chuva entre 20 e 30 mm/h ou até 50 mm/dia, ventos intensos (40-60 km/h), e queda de granizo. Baixo risco de corte de energia elétrica, estragos em plantações, queda de galhos de árvores e de alagamentos.",
+      "janela": "2026-11-26 00:00 até 2026-11-26 23:59",
+      "descricao": "Chuvas Intensas",
+      "riscos": "Chuva entre 20 e 30 mm/h ou até 50 mm/dia, ventos intensos (40-60 km/h). Baixo risco de corte de energia elétrica, queda de galhos de árvores, alagamentos e de descargas elétricas.",
       "instrucoes": "Em caso de rajadas de vento: (não se abrigue debaixo de árvores, pois há leve risco de queda e descargas elétricas e não estacione veículos próximos a torres de transmissão e placas de propaganda).\nEvite usar aparelhos eletrônicos ligados à tomada.\nObtenha mais informações junto à Defesa Civil (telefone 199) e ao Corpo de Bombeiros (telefone 193).",
       "municipios": [
-        "Carinhanha",
-        "Condeúba",
-        "Feira da Mata",
-        "Iuiu",
-        "Jacaraci",
-        "Malhada",
-        "Mortugaba",
-        "Palmas de Monte Alto",
-        "Sebastião Laranjeiras",
-        "Urandi"
+        "Feira da Mata"
       ],
-      "url": "https://avisos.inmet.gov.br/28760"
+      "url": "https://avisos.inmet.gov.br/28762"
     }
   ],
   "fonte": "INMET (apenas avisos vigentes no instante da consulta)"
