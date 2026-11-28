@@ -1,8 +1,9 @@
 {
   "atualizado_em": "2026-11-28T01:30:12Z",
-  "ultima_tentativa": "2026-11-28T01:30:12Z",
+  "ultima_tentativa": "2026-11-28T09:23:35Z",
+  "consulta_ok": false,
   "disponivel": true,
-  "consulta_ok": true,
   "avisos": [],
-  "fonte": "INMET (apenas avisos vigentes no instante da consulta)"
+  "fonte": "INMET (dados preservados da última consulta bem-sucedida)",
+  "erro": "HTTPSConnectionPool(host='apiprevmet3.inmet.gov.br', port=443): Max retries exceeded with url: /avisos/ativos (Caused by ConnectTimeoutError(<HTTPSConnection(ho"
 }
